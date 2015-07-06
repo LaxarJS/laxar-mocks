@@ -335,33 +335,34 @@ define( [
    /**
     * Triggers all events normally published by the runtime after instantiation of the controller. This
     * includes the following events, listed with their according payloads in the order they are published:
-    * 1. *didChangeLocale.default*:
+    *
+    * **1. didChangeLocale.default:**
     * ```js
     * {
     *    locale: 'default',
     *    languageTag: 'en'
     * }
     * ```
-    * 2. *didChangeTheme.default*:
+    * **2. didChangeTheme.default:**
     * ```js
     * {
     *    theme: 'default'
     * }
     * ```
-    * 3. *beginLifecycleRequest.default*:
+    * **3. beginLifecycleRequest.default:**
     * ```js
     * {
     *    lifecycleId: 'default'
     * }
     * ```
-    * 4. *didChangeAreaVisibility.content.true*:
+    * **4. didChangeAreaVisibility.content.true:**
     * ```js
     * {
     *    area: 'content',
     *    visible: true
     * }
     * ```
-    * 5. *didNavigate.testing*:
+    * **5. didNavigate.testing:**
     * ```js
     * {
     *    place: 'testing',

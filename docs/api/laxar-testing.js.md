@@ -48,7 +48,7 @@ define( [
 | -------- | ---- | ----------- |
 | widgetDescriptor | `Object` |  the widget descriptor (taken from `widget.json`) |
 | _optionalOptions_ | `Object` |  optional map of options |
-| _optionalOptions.knownMissingResources_ | `Array` |  list of file name parts as strings or regular expressions, that are known to be absent and as such won't be found by the file resource provider and thus resulting in the logging of a 404 HTTP error. So whenever such an error is logged and the absence of the file is fine, an appropriate entry can be added to this configuration. Mostly CSS files are affected by this |
+| _optionalOptions.knownMissingResources_ | `Array` |  list of file name parts as strings or regular expressions, that are known to be absent and as such won't be found by the file resource provider and thus result in the logging of a 404 HTTP error. So whenever such an error is logged and the absence of the file is fine, an appropriate entry can be added to this configuration. Mostly CSS files are affected by this |
 
 ##### Returns
 | Type | Description |
@@ -67,33 +67,34 @@ afterEach( testing.tearDown );
 #### <a name="triggerStartupEvents"></a>triggerStartupEvents( optionalEvents )
 Triggers all events normally published by the runtime after instantiation of the controller. This
 includes the following events, listed with their according payloads in the order they are published:
-1. *didChangeLocale.default*:
+
+**1. didChangeLocale.default:**
 ```js
 {
    locale: 'default',
    languageTag: 'en'
 }
 ```
-2. *didChangeTheme.default*:
+**2. didChangeTheme.default:**
 ```js
 {
    theme: 'default'
 }
 ```
-3. *beginLifecycleRequest.default*:
+**3. beginLifecycleRequest.default:**
 ```js
 {
    lifecycleId: 'default'
 }
 ```
-4. *didChangeAreaVisibility.content.true*:
+**4. didChangeAreaVisibility.content.true:**
 ```js
 {
    area: 'content',
    visible: true
 }
 ```
-5. *didNavigate.testing*:
+**5. didNavigate.testing:**
 ```js
 {
    place: 'testing',
