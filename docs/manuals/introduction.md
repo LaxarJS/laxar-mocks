@@ -1,6 +1,6 @@
 [<< return to the manuals](index.md)
 
-# Introduction LaxarJS Testing
+# Introduction to LaxarJS Testing
 
 *LaxarJS Testing* aids you in writing tests for *LaxarJS* widgets.
 Although widgets themselves only have little direct dependency on *LaxarJS* (apart from the event bus) and should mostly follow the best practices for the underlying technology (e.g. *AngularJS*), they depend on a fixed setup process provided by the LaxarJS runtime.
@@ -9,7 +9,7 @@ This includes loading of relevant assets (such as templates and stylesheets), cr
 *LaxarJS Testing* provides a simple, programmatic interface to control this process and load a widget within a test.
 We'll introduce the testing framework by showing an example and use this to describe the individual steps usually found in a widget test.
 
-This is a simple test for an *AngularJS*-Widget:
+This is a simple test for an *AngularJS*-Widget (read [this](#directory-layout) to know where to place this file):
 ```js
 // 1. Module Definition
 define( [
@@ -173,3 +173,37 @@ It is then possible to structure the test in isolated `describe` blocks, to adju
 Every widget test should call `testing.tearDown` in a *Jasmine* `afterEach` block or simply pass it to `afterEach`.
 This ensures, that after one test is run, the DOM is cleaned up and the widget with all its dependencies is destroyed.
 If this is omitted, it cannot be guaranteed that remainders of the previous test run do not influence the current test run.
+
+
+# Directory Layout
+
+If you generated your widget or activity with the latest *grunt-init* template, everything should be set up correctly.
+When creating the widget artifacts manually, we recommend the following directory layout for the tests within the widget directory:
+
+```
+example-widget
++-- example-widget.js
++-- widget.json
++-- spec
+    +-- example-widget.spec.js
+    +-- spec_runner.html
+    +-- spec_runner.js
+```
+
+When follwing this structure, the AMD module definition from the top of this introduction should work for you.
+You just have to ensure that paths like `laxar-testing` and `angular-mocks` are configured correctly.
+
+When running the widget test in your browser, this is achieved by using the correct paths in the file `spec_runner.html`.
+By default it is assumed that any widget directory can be found at the directory `includes/widget/<your category>/` under the application root.
+The `require_config.js` of the application will then be loaded by stepping up to the parent directory five times (see [here](example/spec_runner.html) for an example).
+For tests to run, at least the paths `requirejs`, `jasmine`, `laxar-testing` and the RequireJS `json` plugin have to be defined in that file.
+When testing *AngularJS* widgets, the path to `angular-mocks` must be defined as well.
+
+The next file that is loaded is `spec_runner.js` (an example can be found [here](example/spec_runner.html)).
+This file merely defines which actual test files to load and run.
+These files are searched relative to  `spec_runner.js`.
+Optionally you can overwrite *RequireJS* configuration from the application's `require_config.js` file, by setting the appropriate entries under the property `requireConfig`.
+For example, it may sometimes be a good idea to mock a large external library with a simpler stub for testing.
+
+Finally, the module `example-widget.spec.js` defines the actual testing code.
+If you're following these guidelines, the widget descriptor (`widget.json`) can also be loaded as explained in the example, so that the widget under test can be instantiated without problems.
