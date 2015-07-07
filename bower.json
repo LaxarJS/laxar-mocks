@@ -19,6 +19,7 @@
       "promise-polyfill": "~2.1.0"
    },
    "devDependencies": {
-      "jasmine": "~2.3.4"
+      "jasmine": "~2.3.4",
+      "jasmine-ajax": "~3.2.0"
    }
 }
