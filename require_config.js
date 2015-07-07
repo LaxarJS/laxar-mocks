@@ -17,7 +17,10 @@ var require = {
 
       // LaxarJS Testing
       jasmine: 'bower_components/jasmine/lib/jasmine-core/jasmine',
-      'promise-polyfill': 'bower_components/promise-polyfill/Promise'
+      'promise-polyfill': 'bower_components/promise-polyfill/Promise',
+
+      // testing LaxarJS testing
+      'jasmine-ajax': 'bower_components/jasmine-ajax/lib/mock-ajax'
    },
    packages: [
       {
