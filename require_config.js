@@ -1,22 +1,23 @@
 var require = {
-   baseUrl: './bower_components/',
+   baseUrl: './',
    paths: {
-      requirejs: 'requirejs/require',
-      text: 'requirejs-plugins/lib/text',
-      json: 'requirejs-plugins/src/json',
+      requirejs: 'bower_components/requirejs/require',
+      text: 'bower_components/requirejs-plugins/lib/text',
+      json: 'bower_components/requirejs-plugins/src/json',
 
-      'laxar': 'laxar/dist/laxar',
+      'laxar': 'bower_components/laxar/dist/laxar',
 
-      'angular-route': 'angular-route/angular-route',
-      'angular-sanitize': 'angular-sanitize/angular-sanitize',
-      'angular-mocks': 'angular-mocks/angular-mocks',
-      angular: 'angular/angular',
+      'angular-route': 'bower_components/angular-route/angular-route',
+      'angular-sanitize': 'bower_components/angular-sanitize/angular-sanitize',
+      'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
+      angular: 'bower_components/angular/angular',
 
-      jjv: 'jjv/lib/jjv',
-      jjve: 'jjve/jjve',
+      jjv: 'bower_components/jjv/lib/jjv',
+      jjve: 'bower_components/jjve/jjve',
 
-      // LaxarJS testing
-      jasmine: 'jasmine/lib/jasmine-core/jasmine'
+      // LaxarJS Testing
+      jasmine: 'bower_components/jasmine/lib/jasmine-core/jasmine',
+      'promise-polyfill': 'bower_components/promise-polyfill/Promise'
    },
    packages: [
       {
@@ -30,18 +31,21 @@ var require = {
          exports: 'angular'
       },
       'angular-mocks': {
+         deps: [ 'angular' ],
          init: function ( angular ) {
             'use strict';
             return angular.mock;
          }
       },
       'angular-route': {
+         deps: [ 'angular' ],
          init: function ( angular ) {
             'use strict';
             return angular.route;
          }
       },
       'angular-sanitize': {
+         deps: [ 'angular' ],
          init: function ( angular ) {
             'use strict';
             return angular;

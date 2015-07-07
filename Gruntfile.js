@@ -11,28 +11,9 @@ module.exports = function (grunt) {
    var src = {
       gruntfile: 'Gruntfile.js',
       require: 'require_config.js',
-      laxar: [ pkg.name + '.js', 'lib/**/*.js', '!lib/**/spec/**/*.js' ],
-      specs: [ 'lib/**/spec/**/*.js' ]
+      'laxar-testing': [ pkg.name + '.js', 'lib/*.js', '!lib/spec/*.js' ],
+      specs: [ 'lib/spec/*.js' ]
    };
-
-   function karma(lib) {
-      var options = {
-         laxar: {
-            specRunner: 'lib/' + lib + '/spec/spec_runner.js',
-            requireConfig: src.require
-         },
-         junitReporter: {
-            outputFile: 'lib/' + lib + '/spec/test-results.xml'
-         },
-         coverageReporter: {
-            type: 'lcovonly',
-            dir: 'lib/' + lib + '/spec',
-            file: 'lcov.info'
-         }
-      };
-
-      return { options: options };
-   }
 
    grunt.initConfig( {
       jshint: {
@@ -43,7 +24,7 @@ module.exports = function (grunt) {
             options: { node: true },
             src: src.gruntfile
          },
-         laxar: { src: src.laxar },
+         'laxar-testing': { src: src['laxar-testing'] },
          specs: { src: src.specs }
       },
       karma: {
@@ -54,40 +35,39 @@ module.exports = function (grunt) {
             browsers: ['PhantomJS'],
             singleRun: true,
             preprocessors: {
-               'lib/**/*.js': 'coverage'
+               'lib/*.js': 'coverage'
             },
             proxies: {},
             files: [
                { pattern: 'bower_components/**', included: false },
-               { pattern: 'static/**', included: false},
                { pattern: 'lib/**', included: false },
                { pattern: '*.js', included: false }
             ]
          },
-         'directives-id': karma( 'directives/id' ),
-         'directives-layout': karma( 'directives/layout' ),
-         'directives-widget_area': karma( 'directives/widget_area' ),
-         event_bus: karma( 'event_bus' ),
-         file_resource_provider: karma( 'file_resource_provider' ),
-         i18n: karma( 'i18n' ),
-         json: karma( 'json' ),
-         loaders: karma( 'loaders' ),
-         logging: karma( 'logging' ),
-         profiling: karma( 'profiling' ),
-         runtime: karma( 'runtime' ),
-         testing: karma( 'testing' ),
-         utilities: karma( 'utilities' ),
-         widget_adapters: karma( 'widget_adapters' )
+         'laxar-testing': {
+            'laxar': {
+               specRunner: 'lib/spec/spec_runner.js',
+               requireConfig: src.require
+            },
+            junitReporter: {
+               outputFile: 'lib/spec/test-results.xml'
+            },
+            coverageReporter: {
+               type: 'lcovonly',
+               dir: 'lib/spec',
+               file: 'lcov.info'
+            }
+         }
       },
       test_results_merger: {
-         laxar: {
-            src: [ 'lib/**/spec/test-results.xml' ],
+         'laxar-testing': {
+            src: [ 'lib/spec/test-results.xml' ],
             dest: 'test-results.xml'
          }
       },
       lcov_info_merger: {
-         laxar: {
-            src: [ 'lib/**/spec/*/lcov.info' ],
+         'laxar-testing': {
+            src: [ 'lib/spec/*/lcov.info' ],
             dest: 'lcov.info'
          }
       },
@@ -96,9 +76,9 @@ module.exports = function (grunt) {
             files: src.gruntfile,
             tasks: [ 'jshint:gruntfile' ]
          },
-         laxar: {
-            files: src.laxar,
-            tasks: [ 'jshint:laxar', 'karma' ]
+         'laxar-testing': {
+            files: src['laxar-testing'],
+            tasks: [ 'jshint:laxar-testing', 'karma' ]
          },
          specs: {
             files: src.specs,

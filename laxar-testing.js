@@ -17,8 +17,9 @@ define( [
    'laxar',
    './lib/helpers',
    './lib/widget_spec_initializer',
-   'promise-polyfill/Promise'
-], function( require, ax, helpers, widgetSpecInitializer ) {
+   './lib/jasmine_boot',
+   'promise-polyfill'
+], function( require, ax, helpers, widgetSpecInitializer, jasmineBoot ) {
    'use strict';
 
    if( Promise._setImmediateFn ) {
@@ -158,6 +159,7 @@ define( [
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+   var jasmineRunner;
    var specContextLoaded = new Promise( function( resolve, reject ) {
       testing.runSpec = function( specConf, jasmineEnv ) {
          if( specConf.title ) {
@@ -172,19 +174,20 @@ define( [
             return specPrefix + path.join( specBase, test );
          } );
 
-         if( !jasmineEnv ) {
-            jasmineEnv = jasmine.getEnv();
+         jasmineRunner = jasmineBoot.create( jasmineEnv || null );
 
-            jasmineRequire.html( jasmine );
-         }
-
-         helpers.require( tests )
+         // For AngularJS widgets to work, we need to load angular-mocks at this stage. This is because it
+         // checks for the presence of jasmine and if found, adds a beforeEach block. If we would load it
+         // later, beforeEach blocks would already have been called and AngularJS modules would not have been
+         // loaded.
+         helpers.require( [ 'angular-mocks' ] )
+            .then( helpers.require.bind( null, tests ) )
             .then( function() {
                resolve( {
-                  jasmineEnv: jasmineEnv,
+                  jasmineEnv: jasmineRunner.env,
                   absSpecLocation: specUrl
                } );
-               jasmineEnv.execute();
+               jasmineRunner.run();
             } )
             .catch( function( err ) {
                if( window.console && window.console.error ) {
@@ -192,10 +195,10 @@ define( [
                }
 
                reject( err );
-               jasmineEnv.beforeEach( function() {
-                  jasmineEnv.fail( err );
+               jasmineRunner.env.beforeEach( function() {
+                  jasmineRunner.env.fail( err );
                } );
-               jasmineEnv.execute();
+               jasmineRunner.run();
             } );
       };
    } );
