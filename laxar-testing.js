@@ -167,7 +167,7 @@ define( [
          }
 
          var specUrl = specConf.specUrl || dirname( window.location.href );
-         var specBase = path.relative( require.toUrl( '.' ), specUrl );
+         var specBase = path.relative( require.toUrl( './' ), specUrl );
          var specPrefix = specBase[0] === '.' ? '' : './';
 
          var tests = specConf.tests.map( function( test ) {
@@ -181,7 +181,7 @@ define( [
          // later, beforeEach blocks would already have been called and AngularJS modules would not have been
          // loaded.
          helpers.require( [ 'angular-mocks' ] )
-            .then( helpers.require.bind( null, tests ) )
+            .then( helpers.require.bind( null, tests, require ) )
             .then( function() {
                resolve( {
                   jasmineEnv: jasmineRunner.env,
