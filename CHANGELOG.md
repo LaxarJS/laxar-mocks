@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v0.2.1
+
 - [#4](https://github.com/LaxarJS/laxar-testing/issues/4): Fixed dependency to Jasmine
 - [#3](https://github.com/LaxarJS/laxar-testing/issues/3): Fixed construction of test paths for RequireJS
 
