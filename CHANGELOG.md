@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#5](https://github.com/LaxarJS/laxar/issues/5): added Travis-CI build integration
+    + NEW FEATURE: see ticket for details
 - [#4](https://github.com/LaxarJS/laxar-testing/issues/4): Fixed dependency to Jasmine
 - [#3](https://github.com/LaxarJS/laxar-testing/issues/3): Fixed construction of test paths for RequireJS
 

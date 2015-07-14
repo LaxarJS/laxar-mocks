@@ -1,4 +1,4 @@
-# LaxarJS Testing
+# LaxarJS Testing [![Build Status](https://travis-ci.org/LaxarJS/laxar-testing.svg?branch=master)](https://travis-ci.org/LaxarJS/laxar-testing)
 
 > The companion testing framework for LaxarJS widgets.
 
