@@ -20,14 +20,12 @@
 
          var requirePath = require.baseUrl + s + require.paths.requirejs;
          var jasminePath = require.baseUrl + s + require.paths.jasmine;
-         var jasmineCorePath = dirname( jasminePath );
          var jasmineFavicon = jasminePath.replace( 'lib/jasmine-core', 'images' ) + '_favicon.png';
 
          document.writeln( '<link type="text/css" rel="stylesheet" href="' + jasminePath + '.css"></link>' );
          document.writeln( '<link type="image/png" rel="shortcut icon" href="' + jasmineFavicon + '"></link>' );
          document.writeln( '<script type="text/javascript" src="' + jasminePath + '.js"><' + '/script>' );
          document.writeln( '<script type="text/javascript" src="' + jasminePath + '-html.js"><' + '/script>' );
-         document.writeln( '<script type="text/javascript" src="' + jasmineCorePath + '/boot.js"><' + '/script>' );
          document.writeln( '<script type="text/javascript" src="' + requirePath + '.js"><' + '/script>' );
       } )();
    </script>

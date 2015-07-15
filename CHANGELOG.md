@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#8](https://github.com/LaxarJS/laxar/issues/8): fixed example boot sequence (removed jasmine boot)
+
 
 ## v0.2.1
 
