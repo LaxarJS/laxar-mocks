@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v0.3.0
+
 - [#6](https://github.com/LaxarJS/laxar/issues/6): use different paths to access jasmine and jasmine2, use opt-in config for new test-runner
     + **BREAKING CHANGE:** see ticket for details
 - [#7](https://github.com/LaxarJS/laxar/issues/7): project: relaxed version constraint for angular-mocks (1.3.16 -> ~1.3.17 || ~1.4.2)
