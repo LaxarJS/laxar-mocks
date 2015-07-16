@@ -15,11 +15,11 @@ var require = {
       jjv: 'bower_components/jjv/lib/jjv',
       jjve: 'bower_components/jjve/jjve',
 
-      // LaxarJS Testing
-      jasmine: 'bower_components/jasmine/lib/jasmine-core/jasmine',
+      // laxar-testing runtime dependencies:
+      jasmine2: 'bower_components/jasmine2/lib/jasmine-core/jasmine',
       'promise-polyfill': 'bower_components/promise-polyfill/Promise',
 
-      // testing LaxarJS testing
+      // laxar-testing test dependencies:
       'jasmine-ajax': 'bower_components/jasmine-ajax/lib/mock-ajax'
    },
    packages: [
@@ -53,6 +53,7 @@ var require = {
             'use strict';
             return angular;
          }
-      }
+      },
+      'laxar-testing': [ 'bower_components/promise-polyfill/Promise' ]
    }
 };

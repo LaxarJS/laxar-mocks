@@ -47,7 +47,9 @@ module.exports = function (grunt) {
          'laxar-testing': {
             'laxar': {
                specRunner: 'lib/spec/spec_runner.js',
-               requireConfig: src.require
+               requireConfig: src.require,
+               testRunner: 'laxar-testing',
+               jasmineMajorVersion: 2
             },
             junitReporter: {
                outputFile: 'lib/spec/test-results.xml'

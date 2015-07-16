@@ -191,7 +191,7 @@ example-widget
 ```
 
 When follwing this structure, the AMD module definition from the top of this introduction should work for you.
-You just have to ensure that paths like `laxar-testing` and `angular-mocks` are configured correctly.
+You just have to ensure that paths like `laxar-testing` and `angular-mocks` are configured correctly, as described in the README.
 
 When running the widget test in your browser, this is achieved by using the correct paths in the file `spec_runner.html`.
 By default it is assumed that any widget directory can be found at the directory `includes/widget/<your category>/` under the application root.
