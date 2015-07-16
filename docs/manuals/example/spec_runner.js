@@ -19,6 +19,7 @@
       tests: [
          'language-selection-activity.spec'
       ],
-      requireConfig: {}
+      testRunner: 'laxar-testing',
+      jasmineMajorVersion: 2
    };
 } )( this );
