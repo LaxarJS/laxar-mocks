@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#7](https://github.com/LaxarJS/laxar/issues/7): example: fixed license header of spec-runner config
+
 
 ## v0.3.0
 
