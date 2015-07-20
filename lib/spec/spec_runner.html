@@ -13,9 +13,12 @@
    -->
    <script type="text/javascript">
       ( function() {
-         var depth = parseInt( window.location.search.replace( /[?&]folderDepth=([0-9]+)/, '$1' ), 10 ) || 2;
+         // use library-specific paths by default (jasmine-ajax is needed)
+         var defaultDepth = 2;
+         var depth = parseInt( window.location.search.replace( /[?&]folderDepth=([0-9]+)/, '$1' ), 10 );
+         if( isNaN( depth ) ) depth = defaultDepth;
          var config = 'require_config.js';
-         for( var i = 0; i <= depth; ++i ) config = '../' + config;
+         for( var i = 0; i < depth; ++i ) config = '../' + config;
          document.writeln( '<script id="require_config" type="text/javascript" src="' + config + '"><' + '/script>' );
       } )();
    </script>
