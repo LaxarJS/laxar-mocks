@@ -13,9 +13,12 @@
    -->
    <script type="text/javascript">
       ( function() {
-         var depth = parseInt( window.location.search.replace( /[?&]folderDepth=([0-9]+)/, '$1' ), 10 ) || 4;
+         // assume that we live in an application as a widget under includes/widgets/{category}/{widget}
+         var defaultDepth = 5;
+         var depth = parseInt( window.location.search.replace( /[?&]folderDepth=([0-9]+)/, '$1' ), 10 );
+         if( isNaN( depth ) ) depth = defaultDepth;
          var config = 'require_config.js';
-         for( var i = 0; i <= depth; ++i ) config = '../' + config;
+         for( var i = 0; i < depth; ++i ) config = '../' + config;
          document.writeln( '<script id="require_config" type="text/javascript" src="' + config + '"><' + '/script>' );
       } )();
    </script>
