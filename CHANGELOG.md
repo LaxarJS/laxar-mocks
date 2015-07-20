@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#9](https://github.com/LaxarJS/laxar/issues/9): example: spec-runner now takes URL parameter for config-lookup
+    + NEW FEATURE: see ticket for details
 - [#7](https://github.com/LaxarJS/laxar/issues/7): example: fixed license header of spec-runner config
 
 
