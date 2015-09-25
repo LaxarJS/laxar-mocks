@@ -1,8 +1,8 @@
 define( [
    'json!../widget.json',
-   'laxar-testing',
+   'laxar-mocks',
    'angular-mocks'
-], function( descriptor, testing, ngMocks ) {
+], function( descriptor, axMocks, ngMocks ) {
    'use strict';
 
    describe( 'An ExampleWidget', function() {
@@ -11,13 +11,13 @@ define( [
       var widgetDom;
 
       // 2. Test Setup
-      beforeEach( testing.createSetupForWidget( descriptor, {
+      beforeEach( axMocks.createSetupForWidget( descriptor, {
          knownMissingResources: [ 'ax-i18n-control.css' ]
       } ) );
 
       // 3. Widget Configuration
       beforeEach( function() {
-         testing.widget.configure( {
+         axMocks.widget.configure( {
             example: {
                resource: 'exampleResource',
                action: 'exampleAction'
@@ -26,11 +26,11 @@ define( [
       } );
 
       // 4. Loading the Widget
-      beforeEach( testing.widget.load );
+      beforeEach( axMocks.widget.load );
 
       beforeEach( function() {
          // 5. Optional: Rendering the Widget DOM
-         widgetDom = testing.widget.render();
+         widgetDom = axMocks.widget.render();
 
          // 6. Optional: Mocking an AngularJS Injection
          ngMocks.inject( function( $injector ) {
@@ -38,17 +38,17 @@ define( [
          } );
 
          // 7.  Optional: Simulating Startup Events
-         testing.triggerStartupEvents();
+         axMocks.triggerStartupEvents();
       } );
 
       // 8. Tests
       it( 'subscribes to didReplace events for the search resource', function() {
-         expect( testing.widget.axEventBus.subscribe )
+         expect( axMocks.widget.axEventBus.subscribe )
             .toHaveBeenCalledWith( 'didReplace.exampleResource', jasmine.any( Function ) );
       } );
 
       // 9. Test Tear-Down
-      afterEach( testing.tearDown );
+      afterEach( axMocks.tearDown );
 
    } );
 

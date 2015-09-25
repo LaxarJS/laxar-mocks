@@ -6,11 +6,11 @@
 ( function( global ) {
    'use strict';
    global.laxarSpec = {
-      title: 'LanguageSelectionActivity Specification',
+      title: 'ExampleWidget Specification',
       tests: [
-         'language-selection-activity.spec'
+         'example-widget.spec'
       ],
-      testRunner: 'laxar-testing',
+      testRunner: 'laxar-mocks',
       jasmineMajorVersion: 2
    };
 } )( this );

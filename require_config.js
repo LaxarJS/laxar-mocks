@@ -24,9 +24,9 @@ var require = {
    },
    packages: [
       {
-         name: 'laxar-testing',
+         name: 'laxar-mocks',
          location: '.',
-         main: 'laxar-testing'
+         main: 'laxar-mocks'
       }
    ],
    shim: {
@@ -54,6 +54,6 @@ var require = {
             return angular;
          }
       },
-      'laxar-testing': [ 'bower_components/promise-polyfill/Promise' ]
+      'laxar-mocks': [ 'bower_components/promise-polyfill/Promise' ]
    }
 };

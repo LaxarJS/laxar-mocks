@@ -10,7 +10,7 @@
 /**
  * A testing framework for LaxarJS widgets.
  *
- * @module laxar-testing
+ * @module laxar-mocks
  */
 define( [
    'require',
@@ -142,7 +142,7 @@ define( [
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   var testing = {
+   var axMocks = {
       createSetupForWidget: createSetupForWidget,
       widget: widget,
       runSpec: null,
@@ -161,7 +161,7 @@ define( [
 
    var jasmineRunner;
    var specContextLoaded = new Promise( function( resolve, reject ) {
-      testing.runSpec = function( specConf, jasmineEnv ) {
+      axMocks.runSpec = function( specConf, jasmineEnv ) {
          if( specConf.title ) {
             document.title = specConf.title;
          }
@@ -217,8 +217,8 @@ define( [
     * ```js
     * define( [
     *    'json!../widget.json',
-    *    'laxar-testing'
-    * ], function( descriptor, testing ) {
+    *    'laxar-mocks'
+    * ], function( descriptor, axMocks ) {
     *    'use strict';
     *
     *    describe( 'An ExampleWidget', function() {
@@ -227,7 +227,7 @@ define( [
     *
     *       // ... widget configuration, loading and your tests
     *
-    *       afterEach( testing.tearDown );
+    *       afterEach( axMocks.tearDown );
     *
     *    } );
     * } );
@@ -257,17 +257,17 @@ define( [
       var applyViewChanges = adapterFactory.applyViewChanges ? adapterFactory.applyViewChanges : function() {};
 
       return function( done ) {
-         testing.eventBus = ax._tooling.eventBus.create();
-         testing.eventBus.flush = function() {
+         axMocks.eventBus = ax._tooling.eventBus.create();
+         axMocks.eventBus.flush = function() {
             flushEventBusTicks();
             applyViewChanges();
          };
          specContextLoaded
             .then( function( specContext ) {
-               specContext.eventBus = testing.eventBus;
+               specContext.eventBus = axMocks.eventBus;
                specContext.options = options;
                return widgetSpecInitializer
-                  .createSetupForWidget( specContext, testing.widget, widgetPrivateApi, widgetDescriptor );
+                  .createSetupForWidget( specContext, axMocks.widget, widgetPrivateApi, widgetDescriptor );
             } )
             .catch( handleErrorForJasmine )
             .then( done );
@@ -282,7 +282,7 @@ define( [
     *
     * Example.
     * ```js
-    * afterEach( testing.tearDown );
+    * afterEach( axMocks.tearDown );
     * ```
     */
    function tearDown() {
@@ -381,7 +381,7 @@ define( [
     *
     * Example:
     * ```js
-    * testing.triggerStartupEvents( {
+    * axMocks.triggerStartupEvents( {
     *    didChangeLocale: {
     *       alternative: {
     *          locale: 'alternative',
@@ -435,10 +435,10 @@ define( [
                .forEach( function( topicRemainder ) {
                   var payload = event.subtopics[ topicRemainder ];
                   if( payload ) {
-                     testing.eventBus.publish( event.primaryTopic + '.' + topicRemainder, payload );
+                     axMocks.eventBus.publish( event.primaryTopic + '.' + topicRemainder, payload );
                   }
                } );
-            testing.eventBus.flush();
+            axMocks.eventBus.flush();
          } );
    }
 
@@ -509,6 +509,6 @@ define( [
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   return testing;
+   return axMocks;
 
 } );

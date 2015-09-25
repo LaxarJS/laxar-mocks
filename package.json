@@ -1,14 +1,14 @@
 {
-   "name": "laxar-testing",
+   "name": "laxar-mocks",
    "version": "0.4.0-pre",
    "description": "Building large applications is hard, so don't do that!",
    "homepage": "http://laxarjs.org",
-   "main": "laxar-testing.js",
+   "main": "laxar-mocks.js",
    "authors": [],
    "license": "MIT",
    "repository": {
       "type": "git",
-      "url": "https://github.com/LaxarJS/laxar-testing.git"
+      "url": "https://github.com/LaxarJS/laxar-mocks.git"
    },
    "scripts": {
       "test": "grunt test --continue",
@@ -24,7 +24,7 @@
       "grunt-laxar": "~1.1.0-alpha.3"
    },
    "bugs": {
-      "url": "https://github.com/LaxarJS/laxar-testing/issues",
+      "url": "https://github.com/LaxarJS/laxar-mocks/issues",
       "email": "info@laxarjs.org"
    }
 }

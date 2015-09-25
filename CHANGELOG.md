@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#13](https://github.com/LaxarJS/laxar-testing/issues/13): project: renamed to laxar-mocks
 - [#11](https://github.com/LaxarJS/laxar-testing/issues/11): example: fixed one-off bug in HTML spec-runner
 - [#9](https://github.com/LaxarJS/laxar-testing/issues/9): example: spec-runner now takes URL parameter for config-lookup
     + NEW FEATURE: see ticket for details
