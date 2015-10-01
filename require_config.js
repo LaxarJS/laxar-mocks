@@ -15,11 +15,11 @@ var require = {
       jjv: 'bower_components/jjv/lib/jjv',
       jjve: 'bower_components/jjve/jjve',
 
-      // laxar-testing runtime dependencies:
+      // laxar-mocks runtime dependencies:
       jasmine2: 'bower_components/jasmine2/lib/jasmine-core/jasmine',
       'promise-polyfill': 'bower_components/promise-polyfill/Promise',
 
-      // laxar-testing test dependencies:
+      // laxar-mocks test dependencies:
       'jasmine-ajax': 'bower_components/jasmine-ajax/lib/mock-ajax'
    },
    packages: [
