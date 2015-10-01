@@ -5,11 +5,11 @@
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <!--
    This spec-runner works with
-      - 'laxar-testing' (Jasmine 2.3, laxar#^1.1.0) and
+      - 'laxar-mocks' (Jasmine 2.3, laxar#^1.1.0) and
       - 'laxar/laxar_testing' (Jasmine 1.3, laxar#^1.0.x).
 
    More information:
-   https://github.com/LaxarJS/laxar-testing/blob/master/docs/manuals/index.md
+   https://github.com/LaxarJS/laxar-mocks/blob/master/docs/manuals/index.md
    -->
    <script type="text/javascript">
       ( function() {
@@ -52,7 +52,8 @@
       require( [
          laxarSpec.testRunner || 'laxar/laxar_testing'
       ], function( runner ) {
-         ( runner.testing || runner ).runSpec( laxarSpec );
+         ( runner.testing /* laxar/laxar_testing */ ||
+           runner /* laxar-mocks */ ).runSpec( laxarSpec );
       } );
    </script>
 

@@ -11,7 +11,7 @@ module.exports = function (grunt) {
    var src = {
       gruntfile: 'Gruntfile.js',
       require: 'require_config.js',
-      'laxar-testing': [ pkg.name + '.js', 'lib/*.js', '!lib/spec/*.js' ],
+      'laxar-mocks': [ pkg.name + '.js', 'lib/*.js', '!lib/spec/*.js' ],
       specs: [ 'lib/spec/*.js' ]
    };
 
@@ -24,7 +24,7 @@ module.exports = function (grunt) {
             options: { node: true },
             src: src.gruntfile
          },
-         'laxar-testing': { src: src['laxar-testing'] },
+         'laxar-mocks': { src: src['laxar-mocks'] },
          specs: { src: src.specs }
       },
       karma: {
@@ -44,11 +44,11 @@ module.exports = function (grunt) {
                { pattern: '*.js', included: false }
             ]
          },
-         'laxar-testing': {
+         'laxar-mocks': {
             'laxar': {
                specRunner: 'lib/spec/spec_runner.js',
                requireConfig: src.require,
-               testRunner: 'laxar-testing',
+               testRunner: 'laxar-mocks',
                jasmineMajorVersion: 2
             },
             junitReporter: {
@@ -62,13 +62,13 @@ module.exports = function (grunt) {
          }
       },
       test_results_merger: {
-         'laxar-testing': {
+         'laxar-mocks': {
             src: [ 'lib/spec/test-results.xml' ],
             dest: 'test-results.xml'
          }
       },
       lcov_info_merger: {
-         'laxar-testing': {
+         'laxar-mocks': {
             src: [ 'lib/spec/*/lcov.info' ],
             dest: 'lcov.info'
          }
@@ -78,9 +78,9 @@ module.exports = function (grunt) {
             files: src.gruntfile,
             tasks: [ 'jshint:gruntfile' ]
          },
-         'laxar-testing': {
-            files: src['laxar-testing'],
-            tasks: [ 'jshint:laxar-testing', 'karma' ]
+         'laxar-mocks': {
+            files: src['laxar-mocks'],
+            tasks: [ 'jshint:laxar-mocks', 'karma' ]
          },
          specs: {
             files: src.specs,
@@ -96,7 +96,7 @@ module.exports = function (grunt) {
          default: {
             files: [ {
                src: [
-                  './laxar-testing.js'
+                  './laxar-mocks.js'
                ],
                dest: 'docs/api/'
             } ]

@@ -1,5 +1,5 @@
 
-# laxar-testing
+# laxar-mocks
 
 A testing framework for LaxarJS widgets.
 
@@ -27,8 +27,8 @@ Example:
 ```js
 define( [
    'json!../widget.json',
-   'laxar-testing'
-], function( descriptor, testing ) {
+   'laxar-mocks'
+], function( descriptor, axMocks ) {
    'use strict';
 
    describe( 'An ExampleWidget', function() {
@@ -37,7 +37,7 @@ define( [
 
       // ... widget configuration, loading and your tests
 
-      afterEach( testing.tearDown );
+      afterEach( axMocks.tearDown );
 
    } );
 } );
@@ -61,7 +61,7 @@ this once in an `afterEach` call. Passing this function directly to `afterEach` 
 
 Example.
 ```js
-afterEach( testing.tearDown );
+afterEach( axMocks.tearDown );
 ```
 
 #### <a name="triggerStartupEvents"></a>triggerStartupEvents( optionalEvents )
@@ -110,7 +110,7 @@ payload. If the value is `null`, the specific event is not published.
 
 Example:
 ```js
-testing.triggerStartupEvents( {
+axMocks.triggerStartupEvents( {
    didChangeLocale: {
       alternative: {
          locale: 'alternative',
