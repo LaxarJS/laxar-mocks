@@ -48,6 +48,7 @@ define( [
 | -------- | ---- | ----------- |
 | widgetDescriptor | `Object` |  the widget descriptor (taken from `widget.json`) |
 | _optionalOptions_ | `Object` |  optional map of options |
+| _optionalOptions.adapter_ | `Object` |  a technology adapter to use for this widget. When using a custom integration technology (something other than "plain" or "angular"), pass the adapter module using this option. |
 | _optionalOptions.knownMissingResources_ | `Array` |  list of file name parts as strings or regular expressions, that are known to be absent and as such won't be found by the file resource provider and thus result in the logging of a 404 HTTP error. So whenever such an error is logged and the absence of the file is fine, an appropriate entry can be added to this configuration. Mostly CSS files are affected by this |
 
 ##### Returns
