@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#14](https://github.com/LaxarJS/laxar-mocks/issues/14): pass axControls to widget loader
+
 
 ## v0.4.0
 
