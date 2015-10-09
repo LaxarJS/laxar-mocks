@@ -237,6 +237,10 @@ define( [
     *    the widget descriptor (taken from `widget.json`)
     * @param {Object} [optionalOptions]
     *    optional map of options
+    * @param {Object} optionalOptions.adapter
+    *    a technology adapter to use for this widget.
+    *    When using a custom integration technology (something other than "plain" or "angular"), pass the
+    *    adapter module using this option.
     * @param {Array} optionalOptions.knownMissingResources
     *    list of file name parts as strings or regular expressions, that are known to be absent and as such
     *    won't be found by the file resource provider and thus result in the logging of a 404 HTTP error.
@@ -249,11 +253,15 @@ define( [
    function createSetupForWidget( widgetDescriptor, optionalOptions ) {
 
       var options = ax.object.options( optionalOptions, {
+         adapter: null,
          knownMissingResources: []
       } );
 
-      var adapterFactory = ax._tooling.widgetAdapters
-         .getFor( widgetDescriptor.integration.technology );
+      if( optionalOptions.adapter ) {
+         ax._tooling.widgetAdapters.addAdapters( [ optionalOptions.adapter ] );
+      }
+
+      var adapterFactory = ax._tooling.widgetAdapters.getFor( widgetDescriptor.integration.technology );
       var applyViewChanges = adapterFactory.applyViewChanges ? adapterFactory.applyViewChanges : function() {};
 
       return function( done ) {
