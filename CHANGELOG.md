@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v0.5.0
+
 - [#15](https://github.com/LaxarJS/laxar-mocks/issues/15): allow custom technology adapters
 - [#14](https://github.com/LaxarJS/laxar-mocks/issues/14): pass axControls to widget loader
 
