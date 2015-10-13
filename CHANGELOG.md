@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v0.5.1
+
 - [#16](https://github.com/LaxarJS/laxar-mocks/issues/16): fixed optionality of options in createSetupForWidget
 
 
