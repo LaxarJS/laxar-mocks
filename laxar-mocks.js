@@ -257,8 +257,8 @@ define( [
          knownMissingResources: []
       } );
 
-      if( optionalOptions.adapter ) {
-         ax._tooling.widgetAdapters.addAdapters( [ optionalOptions.adapter ] );
+      if( options.adapter ) {
+         ax._tooling.widgetAdapters.addAdapters( [ options.adapter ] );
       }
 
       var adapterFactory = ax._tooling.widgetAdapters.getFor( widgetDescriptor.integration.technology );
