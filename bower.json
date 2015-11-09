@@ -1,6 +1,6 @@
 {
    "name": "laxar-mocks",
-   "version": "0.6.0",
+   "version": "0.6.1",
    "description": "Building large applications is hard, so don't do that!",
    "private": true,
    "authors": [],

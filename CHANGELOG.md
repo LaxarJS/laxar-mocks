@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v0.6.1
+
 - [#18](https://github.com/LaxarJS/laxar-mocks/issues/18): eventBus: made mock use correct promise factory
 
 
