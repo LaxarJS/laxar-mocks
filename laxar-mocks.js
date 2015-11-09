@@ -272,6 +272,7 @@ define( [
          };
          specContextLoaded
             .then( function( specContext ) {
+               specContext.eventBusTick = eventBusTick;
                specContext.eventBus = axMocks.eventBus;
                specContext.options = options;
                return widgetSpecInitializer
