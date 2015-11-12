@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v1.0.0-alpha.0
+
 - [#17](https://github.com/LaxarJS/laxar-mocks/issues/17): added missing API doc entries
 - [#19](https://github.com/LaxarJS/laxar-mocks/issues/19): allowed adding `flush()` method to `ax.fn.debounce` results
 - [#20](https://github.com/LaxarJS/laxar-mocks/issues/20): added mock promise factory support for `laxar._tooling.provideQ`
