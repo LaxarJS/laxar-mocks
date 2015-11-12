@@ -148,7 +148,8 @@ define( [
       runSpec: null,
       eventBus: null,
       tearDown: tearDown,
-      triggerStartupEvents: triggerStartupEvents
+      triggerStartupEvents: triggerStartupEvents,
+      configureMockDebounce: configureMockDebounce
    };
 
    var widgetDomContainer;
@@ -512,6 +513,56 @@ define( [
          var windowSetTimeout = window.setTimeout;
          Promise._setImmediateFn( function( callback ) {
             windowSetTimeout( callback, 0 );
+         } );
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   /**
+    * Install an `laxar.fn.debounce`-compatible mock replacement that supports manual `flush()`.
+    * When called, `flush` will process all pending debounced calls,
+    * Additionally, there is a `debounce.waiting` array, to inspect waiting calls.
+    *
+    * When called from a `beforeEach` block, only manual flush will work for test cases within that block.
+    * Regular time passing (or the jasmine mock clock) will then have no effect on debounced calls.
+    * The mocks are automatically cleaned up after test cases.
+    */
+   function configureMockDebounce() {
+      var fn = ax.fn;
+      spyOn( fn, 'debounce' ).and.callThrough();
+      fn.debounce.flush = flush;
+      fn.debounce.waiting = [];
+
+      var timeoutId = 0;
+      spyOn( fn, '_setTimeout' ).and.callFake( function( f, interval ) {
+         var timeout = ++timeoutId;
+         var run = function( force ) {
+            if( timeout === null ) { return; }
+            removeWaiting( timeout );
+            timeout = null;
+            f( force );
+         };
+
+         fn.debounce.waiting.push( run );
+         run.timeout = timeout;
+         return timeout;
+      } );
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      function flush() {
+         fn.debounce.waiting.forEach( function( run ) {
+            run( true );
+         } );
+         fn.debounce.waiting.splice( 0 );
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      function removeWaiting( timeout ) {
+         fn.debounce.waiting = fn.debounce.waiting.filter( function( waiting ) {
+            return waiting.timeout !== timeout;
          } );
       }
    }

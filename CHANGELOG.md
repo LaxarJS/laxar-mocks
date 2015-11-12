@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#19](https://github.com/LaxarJS/laxar-mocks/issues/19): allowed adding `flush()` method to `ax.fn.debounce` results
 - [#20](https://github.com/LaxarJS/laxar-mocks/issues/20): added mock promise factory support for `laxar._tooling.provideQ`
 - [#18](https://github.com/LaxarJS/laxar-mocks/issues/18): eventBus: made mock use correct promise factory
 
