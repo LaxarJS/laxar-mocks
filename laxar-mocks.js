@@ -143,10 +143,36 @@ define( [
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    var axMocks = {
+
       createSetupForWidget: createSetupForWidget,
+
+      /**
+       * The {@link Widget} instrumentation instance for this test.
+       * After the setup-method (provided by {@link createSetupForWidget}) has been run, this also contains
+       * the widget's injections.
+       *
+       * @type {Widget}
+       * @name widget
+       */
       widget: widget,
+
+      /**
+       * This method is used by the spec-runner (HTML- or karma-based) to start running the spec suite.
+       */
       runSpec: null,
+
+      /**
+       * The _"test end"_ of the LaxarJS event bus.
+       * Tests should use this event bus instance to interact with the widget under test by publishing
+       * synthetic events. Tests can also use this handle for subscribing to events published  by the widget.
+       *
+       * There is also the event bus instance used by the widget itself, with spied-upon publish/subscribe
+       * methods. That instance can be accessed as `axMocks.widget.axEventBus`.
+       *
+       * @name eventBus
+       */
       eventBus: null,
+
       tearDown: tearDown,
       triggerStartupEvents: triggerStartupEvents,
       configureMockDebounce: configureMockDebounce
@@ -454,6 +480,58 @@ define( [
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+   /**
+    * Installs an `laxar.fn.debounce`-compatible mock replacement that supports manual `flush()`.
+    * When called, `flush` will process all pending debounced calls,
+    * Additionally, there is a `debounce.waiting` array, to inspect waiting calls.
+    *
+    * When called from a `beforeEach` block, only a manual flush will cause debounced calls to be processed
+    * within that block. The passing of time (wall-clock or jasmine-mock clock) will have no effect on calls
+    * that were debounced in this context.
+    *
+    * The mocks are automatically cleaned up after each test case.
+    */
+   function configureMockDebounce() {
+      var fn = ax.fn;
+      spyOn( fn, 'debounce' ).and.callThrough();
+      fn.debounce.flush = flush;
+      fn.debounce.waiting = [];
+
+      var timeoutId = 0;
+      spyOn( fn, '_setTimeout' ).and.callFake( function( f, interval ) {
+         var timeout = ++timeoutId;
+         var run = function( force ) {
+            if( timeout === null ) { return; }
+            removeWaiting( timeout );
+            timeout = null;
+            f( force );
+         };
+
+         fn.debounce.waiting.push( run );
+         run.timeout = timeout;
+         return timeout;
+      } );
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      function flush() {
+         fn.debounce.waiting.forEach( function( run ) {
+            run( true );
+         } );
+         fn.debounce.waiting.splice( 0 );
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      function removeWaiting( timeout ) {
+         fn.debounce.waiting = fn.debounce.waiting.filter( function( waiting ) {
+            return waiting.timeout !== timeout;
+         } );
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
    function dirname( file ) {
       return file.substr( 0, file.lastIndexOf( '/' ) );
    }
@@ -513,56 +591,6 @@ define( [
          var windowSetTimeout = window.setTimeout;
          Promise._setImmediateFn( function( callback ) {
             windowSetTimeout( callback, 0 );
-         } );
-      }
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   /**
-    * Install an `laxar.fn.debounce`-compatible mock replacement that supports manual `flush()`.
-    * When called, `flush` will process all pending debounced calls,
-    * Additionally, there is a `debounce.waiting` array, to inspect waiting calls.
-    *
-    * When called from a `beforeEach` block, only manual flush will work for test cases within that block.
-    * Regular time passing (or the jasmine mock clock) will then have no effect on debounced calls.
-    * The mocks are automatically cleaned up after test cases.
-    */
-   function configureMockDebounce() {
-      var fn = ax.fn;
-      spyOn( fn, 'debounce' ).and.callThrough();
-      fn.debounce.flush = flush;
-      fn.debounce.waiting = [];
-
-      var timeoutId = 0;
-      spyOn( fn, '_setTimeout' ).and.callFake( function( f, interval ) {
-         var timeout = ++timeoutId;
-         var run = function( force ) {
-            if( timeout === null ) { return; }
-            removeWaiting( timeout );
-            timeout = null;
-            f( force );
-         };
-
-         fn.debounce.waiting.push( run );
-         run.timeout = timeout;
-         return timeout;
-      } );
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      function flush() {
-         fn.debounce.waiting.forEach( function( run ) {
-            run( true );
-         } );
-         fn.debounce.waiting.splice( 0 );
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      function removeWaiting( timeout ) {
-         fn.debounce.waiting = fn.debounce.waiting.filter( function( waiting ) {
-            return waiting.timeout !== timeout;
          } );
       }
    }
