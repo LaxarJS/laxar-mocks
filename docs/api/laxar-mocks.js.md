@@ -6,9 +6,13 @@ A testing framework for LaxarJS widgets.
 ## Contents
 
 **Module Members**
+- [widget](#widget)
+- [runSpec](#runSpec)
+- [eventBus](#eventBus)
 - [createSetupForWidget](#createSetupForWidget)
 - [tearDown](#tearDown)
 - [triggerStartupEvents](#triggerStartupEvents)
+- [configureMockDebounce](#configureMockDebounce)
 
 **Types**
 - [Widget](#Widget)
@@ -17,6 +21,22 @@ A testing framework for LaxarJS widgets.
   - [Widget#render](#Widget#render)
 
 ## Module Members
+#### <a name="widget"></a>widget
+The [Widget](#Widget) instrumentation instance for this test.
+After the setup-method (provided by [createSetupForWidget](#createSetupForWidget)) has been run, this also contains
+the widget's injections.
+
+#### <a name="runSpec"></a>runSpec()
+This method is used by the spec-runner (HTML- or karma-based) to start running the spec suite.
+
+#### <a name="eventBus"></a>eventBus
+The _"test end"_ of the LaxarJS event bus.
+Tests should use this event bus instance to interact with the widget under test by publishing
+synthetic events. Tests can also use this handle for subscribing to events published  by the widget.
+
+There is also the event bus instance used by the widget itself, with spied-upon publish/subscribe
+methods. That instance can be accessed as `axMocks.widget.axEventBus`.
+
 #### <a name="createSetupForWidget"></a>createSetupForWidget( widgetDescriptor, optionalOptions )
 Creates the setup function for a widget test. The returned function is asynchronous and should simply be
 passed to `beforeEach`. By doing so, the handling of the Jasmine `done` callback happens under the hood.
@@ -145,6 +165,17 @@ The effect of this call is the following:
 | Property | Type | Description |
 | -------- | ---- | ----------- |
 | _optionalEvents_ | `Object` |  optional map of user defined events |
+
+#### <a name="configureMockDebounce"></a>configureMockDebounce()
+Installs an `laxar.fn.debounce`-compatible mock replacement that supports manual `flush()`.
+When called, `flush` will process all pending debounced calls,
+Additionally, there is a `debounce.waiting` array, to inspect waiting calls.
+
+When called from a `beforeEach` block, only a manual flush will cause debounced calls to be processed
+within that block. The passing of time (wall-clock or jasmine-mock clock) will have no effect on calls
+that were debounced in this context.
+
+The mocks are automatically cleaned up after each test case.
 
 ## Types
 ### <a name="Widget"></a>Widget
