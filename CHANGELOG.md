@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v1.0.0-alpha.1
+
 - [#21](https://github.com/LaxarJS/laxar-mocks/issues/21): respect flush/applyViewChanges interaction
 
 
