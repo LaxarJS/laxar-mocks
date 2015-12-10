@@ -294,8 +294,7 @@ define( [
       return function( done ) {
          axMocks.eventBus = ax._tooling.eventBus.create();
          axMocks.eventBus.flush = function() {
-            flushEventBusTicks();
-            applyViewChanges();
+            flushEventBusTicks( applyViewChanges );
          };
          specContextLoaded
             .then( function( specContext ) {
@@ -543,11 +542,12 @@ define( [
       scheduledFunctions.push( func );
    }
 
-   function flushEventBusTicks() {
+   function flushEventBusTicks( applyViewChanges ) {
       while( scheduledFunctions.length > 0 ) {
          var funcs = scheduledFunctions.slice( 0 );
          scheduledFunctions = [];
          funcs.forEach( function( func ) { func(); } );
+         applyViewChanges();
       }
    }
 
