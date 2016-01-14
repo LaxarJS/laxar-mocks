@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#23](https://github.com/LaxarJS/laxar-mocks/issues/23): project: updated copyright year in file header
+
 
 ## v1.0.0-alpha.1
 
