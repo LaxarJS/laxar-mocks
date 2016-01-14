@@ -1,7 +1,7 @@
 /**
- * Copyright 2015 aixigo AG
+ * Copyright 2016 aixigo AG
  * Released under the MIT license.
- * http://www.laxarjs.org
+ * http://laxarjs.org/license
  */
 ( function( global ) {
    'use strict';
