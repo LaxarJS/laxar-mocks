@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#24](https://github.com/LaxarJS/laxar-mocks/issues/24): documentation: added missing information on the widget ID
+
 
 ## v1.0.0
 

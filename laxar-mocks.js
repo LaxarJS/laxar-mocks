@@ -87,6 +87,8 @@ define( [
        * Loads the given widget and instantiates its controller. As this function is asynchronous, it receives
        * a Jasmine `done` callback, that is called when the widget is ready.
        *
+       * The instance ID (`axContext.widget.id`) for widgets loaded by laxar-mocks is always `testWidget`.
+       *
        * The simplest way to call this function is by passing it to its own `beforeEach` call:
        * ```js
        * beforeEach( testing.widget.load );
