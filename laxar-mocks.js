@@ -2,603 +2,505 @@
  * Copyright 2016 aixigo AG
  * Released under the MIT license.
  * http://laxarjs.org/license
- *
- * with parts by Kris Kowal
- * Copyright 2009-2012 Kris Kowal under the terms of the MIT
- * license found at http://github.com/kriskowal/q/raw/master/LICENSE
  */
 /**
  * A testing framework for LaxarJS widgets.
  *
  * @module laxar-mocks
  */
-define( [
-   'require',
-   'laxar',
-   './lib/helpers',
-   './lib/widget_spec_initializer',
-   './lib/jasmine_boot',
-   'promise-polyfill'
-], function( require, ax, helpers, widgetSpecInitializer, jasmineBoot ) {
-   'use strict';
+import { assert, bootstrap, plainAdapter } from 'laxar';
+import {
+   createAxAssetsMock,
+   createAxConfigurationMock,
+   createAxEventBusMock,
+   createAxFlowServiceMock,
+   createAxGlobalStorageMock,
+   createAxHeartbeatMock,
+   createAxI18nMock,
+   createAxLogMock,
+   createAxStorageMock,
+   createAxVisibilityMock
+} from 'laxar/laxar-widget-service-mocks';
 
-   if( Promise._setImmediateFn ) {
-      // If this is truthy, the Promise polyfill was loaded instead of a native implementation.
-      configurePromisePolyfill();
-   }
+const widgetPrivateApi = {};
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// The AngularJS adapter messes with the regular Promise API.
+// To guarantee AngularJS-free scheduling of `widget.render` we need to hold on to the original.
+const Promise = window.Promise;
+const nextTick = f => {
+   Promise.resolve().then( f );
+};
 
-   /**
-    * The API to instrument and inspect the widget under test. In addition to the listed methods it has all
-    * injections for the specific widget technology set as properties. E.g. for every widget technology there
-    * will be `axEventBus` and `axContext` properties, but for AngularJS widgets there will be an additional
-    * `$scope` property. Note that these are only available after `load()` has been called and the widget
-    * controller is loaded.
-    *
-    * The methods of the event bus instance available as `axEventBus` are already provided with
-    * [Jasmine spies](http://jasmine.github.io/2.3/introduction.html#section-Spies).
-    *
-    * @name Widget
-    */
-   var widget = {
+const noOp = () => {};
 
-      /**
-       * Configures the widget features before loading with the given configuration object or key/value
-       * entries. In fact this is what you'd normally configure under the `features` key in a page descriptor.
-       *
-       * Shorthands may be used:
-       *
-       * This
-       * ```js
-       * beforeEach( function() {
-       *    testing.widget.configure( {
-       *       search: {
-       *          resource: 'search'
-       *       }
-       *    } );
-       * } );
-       * ```
-       * is equivalent to the following shorter version
-       * ```js
-       * beforeEach( function() {
-       *    testing.widget.configure( 'search.resource', 'search' );
-       * } );
-       * ```
-       *
-       * @param {String|Object} keyOrConfiguration
-       *    either an object for the full features configuration or the path to the property to configure
-       * @param {*} [optionalValue]
-       *    if `keyOrConfiguration` is a string, this is the value to set the feature configuration to
-       *
-       * @memberOf Widget
-       */
-      configure: function( keyOrConfiguration, optionalValue ) {
-         if( !widgetPrivateApi.configure ) {
-            throw new Error( 'testing.createSetupForWidget needs to be called prior to configure.' );
-         }
+let laxarServices;
+let anchorElement;
+let adapterInstance;
 
-         widgetPrivateApi.configure.apply( widgetPrivateApi, arguments );
-      },
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * A map from widget names to setup-options (an object per widget name).
+ *
+ * Spec-runners may add entries to this map to provision widget specs with options that will automatically be
+ * picked up by `createSetupForWidget`. For example, the laxar-mocks spec-loader for webpack puts the
+ * `artifacts` and `adapter` options here.
+ *
+ * Options set by the spec-test when calling `createSetupForWidget` will take precedence over these values.
+ */
+export const fixtures = {};
 
-      /**
-       * Loads the given widget and instantiates its controller. As this function is asynchronous, it receives
-       * a Jasmine `done` callback, that is called when the widget is ready.
-       *
-       * The instance ID (`axContext.widget.id`) for widgets loaded by laxar-mocks is always `testWidget`.
-       *
-       * The simplest way to call this function is by passing it to its own `beforeEach` call:
-       * ```js
-       * beforeEach( testing.widget.load );
-       * ```
-       *
-       * @param {Function} done
-       *    callback to notify Jasmine, that the asynchronous widget loading has finished
-       *
-       * @memberOf Widget
-       */
-      load: function( done ) {
-         if( !widgetPrivateApi.load ) {
-            throw new Error( 'testing.createSetupForWidget needs to be called prior to load.' );
-         }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-         if( typeof done !== 'function' ) {
-            throw new Error( 'testing.widget.load needs to be called with a Jasmine done-callback function.' );
-         }
+export let eventBus;
 
-         widgetPrivateApi.load()
-            .catch( handleErrorForJasmine )
-            .then( done );
-      },
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      /**
-       * Renders the widget's template by calling the appropriate widget adapter and appends it within a
-       * container div to the test's DOM. The widget DOM fragement will be returned in order to simulate
-       * user interaction on it. Calling `testing.tearDown()` will remove it again.
-       *
-       * Note that calling this method for an activity has no effect and hence is unnessecary.
-       *
-       * @return {Node}
-       *    the widget DOM fragment
-       *
-       * @memberOf Widget
-       */
-      render: function() {
-         if( widgetDomContainer && widgetDomContainer.parentElement ) {
-            widgetDomContainer.parentElement.removeChild( widgetDomContainer );
-         }
-
-         widgetDomContainer = document.createElement( 'div' );
-         widgetDomContainer.id = 'widgetContainer';
-         document.body.appendChild( widgetDomContainer );
-         widgetPrivateApi.renderTo( widgetDomContainer );
-
-         return widgetDomContainer.firstChild;
-      }
-
-   };
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   var axMocks = {
-
-      createSetupForWidget: createSetupForWidget,
-
-      /**
-       * The {@link Widget} instrumentation instance for this test.
-       * After the setup-method (provided by {@link createSetupForWidget}) has been run, this also contains
-       * the widget's injections.
-       *
-       * @type {Widget}
-       * @name widget
-       */
-      widget: widget,
-
-      /**
-       * This method is used by the spec-runner (HTML- or karma-based) to start running the spec suite.
-       */
-      runSpec: null,
-
-      /**
-       * The _"test end"_ of the LaxarJS event bus.
-       * Tests should use this event bus instance to interact with the widget under test by publishing
-       * synthetic events. Tests can also use this handle for subscribing to events published  by the widget.
-       *
-       * There is also the event bus instance used by the widget itself, with spied-upon publish/subscribe
-       * methods. That instance can be accessed as `axMocks.widget.axEventBus`.
-       *
-       * @name eventBus
-       */
-      eventBus: null,
-
-      tearDown: tearDown,
-      triggerStartupEvents: triggerStartupEvents,
-      configureMockDebounce: configureMockDebounce
-   };
-
-   var widgetDomContainer;
-   var widgetPrivateApi = {};
-   var path = ax._tooling.path;
-
-   ax._tooling.eventBus.init( helpers.legacyQ(), eventBusTick, eventBusTick );
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   var jasmineRunner;
-   var specContextLoaded = new Promise( function( resolve, reject ) {
-      axMocks.runSpec = function( specConf, jasmineEnv ) {
-         if( specConf.title ) {
-            document.title = specConf.title;
-         }
-
-         var specUrl = specConf.specUrl || dirname( window.location.href );
-         var specBase = path.relative( require.toUrl( './' ), specUrl );
-         var specPrefix = specBase[0] === '.' ? '' : './';
-
-         var tests = specConf.tests.map( function( test ) {
-            return specPrefix + path.join( specBase, test );
-         } );
-
-         jasmineRunner = jasmineBoot.create( jasmineEnv || null );
-
-         // For AngularJS widgets to work, we need to load angular-mocks at this stage. This is because it
-         // checks for the presence of jasmine and if found, adds a beforeEach block. If we would load it
-         // later, beforeEach blocks would already have been called and AngularJS modules would not have been
-         // loaded.
-         helpers.require( [ 'angular-mocks' ] )
-            .then( helpers.require.bind( null, tests, require ) )
-            .then( function() {
-               resolve( {
-                  jasmineEnv: jasmineRunner.env,
-                  absSpecLocation: specUrl
-               } );
-               jasmineRunner.run();
-            } )
-            .catch( function( err ) {
-               if( window.console && window.console.error ) {
-                  window.console.error( err );
-               }
-
-               reject( err );
-               jasmineRunner.env.beforeEach( function() {
-                  jasmineRunner.env.fail( err );
-               } );
-               jasmineRunner.run();
-            } );
-      };
-   } );
-
-
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * The API to instrument and inspect the widget under test. In addition to the listed methods it has all
+ * injections for the specific widget technology set as properties. E.g. for every widget technology there
+ * will be `axEventBus` and `axContext` properties, but for AngularJS widgets there will be an additional
+ * `$scope` property. Note that these are only available after `load()` has been called and the widget
+ * controller is loaded.
+ *
+ * The methods of the event bus instance available as `axEventBus` are already provided with
+ * [Jasmine spies](http://jasmine.github.io/2.3/introduction.html#section-Spies).
+ *
+ * @name Widget
+ */
+export const widget = {
 
    /**
-    * Creates the setup function for a widget test. The returned function is asynchronous and should simply be
-    * passed to `beforeEach`. By doing so, the handling of the Jasmine `done` callback happens under the hood.
-    * To receive the widget descriptor (i.e. the contents of the `widget.json` file) the use of the RequireJS
-    * *json* plugin is advised.
+    * Configures the widget features before loading with the given configuration object or key/value
+    * entries. In fact this is what you'd normally configure under the `features` key in a page descriptor.
     *
-    * Example:
+    * Shorthands may be used:
+    *
+    * This
     * ```js
-    * define( [
-    *    'json!../widget.json',
-    *    'laxar-mocks'
-    * ], function( descriptor, axMocks ) {
-    *    'use strict';
-    *
-    *    describe( 'An ExampleWidget', function() {
-    *
-    *       beforeEach( testing.createSetupForWidget( descriptor ) );
-    *
-    *       // ... widget configuration, loading and your tests
-    *
-    *       afterEach( axMocks.tearDown );
-    *
+    * beforeEach( function() {
+    *    testing.widget.configure( {
+    *       search: {
+    *          resource: 'search'
+    *       }
     *    } );
     * } );
     * ```
-    *
-    * @param {Object} widgetDescriptor
-    *    the widget descriptor (taken from `widget.json`)
-    * @param {Object} [optionalOptions]
-    *    optional map of options
-    * @param {Object} optionalOptions.adapter
-    *    a technology adapter to use for this widget.
-    *    When using a custom integration technology (something other than "plain" or "angular"), pass the
-    *    adapter module using this option.
-    * @param {Array} optionalOptions.knownMissingResources
-    *    list of file name parts as strings or regular expressions, that are known to be absent and as such
-    *    won't be found by the file resource provider and thus result in the logging of a 404 HTTP error.
-    *    So whenever such an error is logged and the absence of the file is fine, an appropriate entry can be
-    *    added to this configuration. Mostly CSS files are affected by this
-    *
-    * @return {Function}
-    *    a function to directly pass to `beforeEach`, accepting a Jasmine `done` callback
-    */
-   function createSetupForWidget( widgetDescriptor, optionalOptions ) {
-
-      var options = ax.object.options( optionalOptions, {
-         adapter: null,
-         knownMissingResources: []
-      } );
-
-      if( options.adapter ) {
-         ax._tooling.widgetAdapters.addAdapters( [ options.adapter ] );
-      }
-
-      var adapterFactory = ax._tooling.widgetAdapters.getFor( widgetDescriptor.integration.technology );
-      var applyViewChanges = adapterFactory.applyViewChanges ? adapterFactory.applyViewChanges : function() {};
-
-      return function( done ) {
-         axMocks.eventBus = ax._tooling.eventBus.create();
-         axMocks.eventBus.flush = function() {
-            flushEventBusTicks( applyViewChanges );
-         };
-         specContextLoaded
-            .then( function( specContext ) {
-               specContext.eventBusTick = eventBusTick;
-               specContext.eventBus = axMocks.eventBus;
-               specContext.options = options;
-               return widgetSpecInitializer
-                  .createSetupForWidget( specContext, axMocks.widget, widgetPrivateApi, widgetDescriptor );
-            } )
-            .catch( handleErrorForJasmine )
-            .then( done );
-      };
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   /**
-    * Removes any DOM fragments of the widget and calls the appropriate destructors. It is advised to call
-    * this once in an `afterEach` call. Passing this function directly to `afterEach` works as well.
-    *
-    * Example.
+    * is equivalent to the following shorter version
     * ```js
-    * afterEach( axMocks.tearDown );
-    * ```
-    */
-   function tearDown() {
-      widgetPrivateApi.destroy();
-      if( widgetDomContainer && widgetDomContainer.parentElement ) {
-         widgetDomContainer.parentElement.removeChild( widgetDomContainer );
-         widgetDomContainer = null;
-      }
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   var defaultEvents = ( function() {
-      var sortIndexCounter = 0;
-      return {
-         didChangeLocale: {
-            AX_SORT_INDEX: sortIndexCounter++,
-            'default': {
-               locale: 'default',
-               languageTag: 'en'
-            }
-         },
-         didChangeTheme: {
-            AX_SORT_INDEX: sortIndexCounter++,
-            'default': {
-               theme: 'default'
-            }
-         },
-         beginLifecycleRequest: {
-            AX_SORT_INDEX: sortIndexCounter++,
-            'default': {
-               lifecycleId: 'default'
-            }
-         },
-         didChangeAreaVisibility: {
-            AX_SORT_INDEX: sortIndexCounter++,
-            'content.true': {
-               area: 'content',
-               visible: true
-            }
-         },
-         didNavigate: {
-            AX_SORT_INDEX: sortIndexCounter++,
-            testing: {
-               place: 'testing',
-               target: '_self',
-               data: {}
-            }
-         }
-      };
-   } )();
-
-   /**
-    * Triggers all events normally published by the runtime after instantiation of the controller. This
-    * includes the following events, listed with their according payloads in the order they are published:
-    *
-    * **1. didChangeLocale.default:**
-    * ```js
-    * {
-    *    locale: 'default',
-    *    languageTag: 'en'
-    * }
-    * ```
-    * **2. didChangeTheme.default:**
-    * ```js
-    * {
-    *    theme: 'default'
-    * }
-    * ```
-    * **3. beginLifecycleRequest.default:**
-    * ```js
-    * {
-    *    lifecycleId: 'default'
-    * }
-    * ```
-    * **4. didChangeAreaVisibility.content.true:**
-    * ```js
-    * {
-    *    area: 'content',
-    *    visible: true
-    * }
-    * ```
-    * **5. didNavigate.testing:**
-    * ```js
-    * {
-    *    place: 'testing',
-    *    target: '_self',
-    *    data: {}
-    * }
-    * ```
-    *
-    * Via the `optionalEvents` argument it is possible to add events with different trailing topics, to
-    * overwrite events defined above, or to completely prevent from triggering one of the events. To do so
-    * simply pass a map, where the primary topics are the keys and the value is a map from trailing topic to
-    * payload. If the value is `null`, the specific event is not published.
-    *
-    * Example:
-    * ```js
-    * axMocks.triggerStartupEvents( {
-    *    didChangeLocale: {
-    *       alternative: {
-    *          locale: 'alternative',
-    *          languageTag: 'de'
-    *       }
-    *    },
-    *    didChangeTheme: {
-    *       'default': null
-    *    },
-    *    didNavigate: {
-    *       testing: {
-    *          place: 'testing',
-    *          target: '_self',
-    *          data: {
-    *             user: 'Peter',
-    *             articleId: '1234'
-    *          }
-    *       }
-    *    }
+    * beforeEach( function() {
+    *    testing.widget.configure( 'search.resource', 'search' );
     * } );
     * ```
     *
-    * The effect of this call is the following:
-    * 1. There will be two *didChangeLocale* events: *didChangeLocale.default*, carrying the language tag *en*
-    *    in its payload, and *didChangeLocale.alternative*, carrying the language tag *de* in its payload.
-    * 2. There will be no *didChangeTheme* event, since the only pre-configured one is set to `null`.
-    * 3. The parameters of the *didNavigate.testing* event are changed to be
-    *    `{ user: 'Peter', articleId: '1234' }`.
+    * @param {String|Object} keyOrConfiguration
+    *    either an object for the full features configuration or the path to the property to configure
+    * @param {*} [optionalValue]
+    *    if `keyOrConfiguration` is a string, this is the value to set the feature configuration to
     *
-    * @param {Object} [optionalEvents]
-    *    optional map of user defined events
-    *
+    * @memberOf Widget
     */
-   function triggerStartupEvents( optionalEvents ) {
-      var userEvents = optionalEvents || {};
-      Object.keys( defaultEvents )
-         .sort( function( eventNameA, eventNameB ) {
-            return defaultEvents[ eventNameA ].AX_SORT_INDEX - defaultEvents[ eventNameB ].AX_SORT_INDEX;
-         } )
-         .map( function( primaryTopic ) {
-            var userEventInfo = userEvents[ primaryTopic ] || {};
-            var eventInfo = ax.object.extend( {}, defaultEvents[ primaryTopic ], userEventInfo );
-            delete eventInfo.AX_SORT_INDEX;
-            return {
-               primaryTopic: primaryTopic,
-               subtopics: eventInfo
-            };
-         } )
-         .forEach( function( event ) {
-            Object.keys( event.subtopics )
-               .forEach( function( topicRemainder ) {
-                  var payload = event.subtopics[ topicRemainder ];
-                  if( payload ) {
-                     axMocks.eventBus.publish( event.primaryTopic + '.' + topicRemainder, payload );
-                  }
-               } );
-            axMocks.eventBus.flush();
-         } );
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+   configure( keyOrConfiguration, optionalValue ) {
+      if( !widgetPrivateApi.configure ) {
+         throw new Error( 'laxar-mocks: createSetupForWidget needs to be called prior to configure.' );
+      }
+      widgetPrivateApi.configure( keyOrConfiguration, optionalValue );
+   },
 
    /**
-    * Installs an `laxar.fn.debounce`-compatible mock replacement that supports manual `flush()`.
-    * When called, `flush` will process all pending debounced calls,
-    * Additionally, there is a `debounce.waiting` array, to inspect waiting calls.
+    * Loads the given widget and instantiates its controller. As this function is asynchronous, it receives
+    * a Jasmine `done` callback that is called when the widget is ready.
     *
-    * When called from a `beforeEach` block, only a manual flush will cause debounced calls to be processed
-    * within that block. The passing of time (wall-clock or jasmine-mock clock) will have no effect on calls
-    * that were debounced in this context.
+    * The instance ID (`axContext.widget.id`) for widgets loaded by laxar-mocks is always `testWidget`.
+    * Their containing widget area is always `content`.
     *
-    * The mocks are automatically cleaned up after each test case.
+    * The simplest way to call this function is by passing it to its own `beforeEach` call:
+    * ```js
+    * beforeEach( testing.widget.load );
+    * ```
+    *
+    * @param {Function} done
+    *    callback to notify Jasmine that the asynchronous widget loading has finished
+    *
+    * @memberOf Widget
     */
-   function configureMockDebounce() {
-      var fn = ax.fn;
-      spyOn( fn, 'debounce' ).and.callThrough();
-      fn.debounce.flush = flush;
-      fn.debounce.waiting = [];
+   load( done ) {
+      if( !widgetPrivateApi.load ) {
+         throw new Error( 'laxar-mocks: createSetupForWidget needs to be called prior to load.' );
+      }
+      if( typeof done !== 'function' ) {
+         throw new Error( 'laxar-mocks: widget.load must be called with a Jasmine done-callback function.' );
+      }
+      widgetPrivateApi.load()
+         .catch( handleErrorForJasmine )
+         .then( () => nextTick( done ) );
+   },
 
-      var timeoutId = 0;
-      spyOn( fn, '_setTimeout' ).and.callFake( function( f, interval ) {
-         var timeout = ++timeoutId;
-         var run = function( force ) {
-            if( timeout === null ) { return; }
-            removeWaiting( timeout );
-            timeout = null;
-            f( force );
+   /**
+    * Renders the widget's template by calling the appropriate widget adapter and appends it within a
+    * container div to the test's DOM. The widget DOM fragement will be returned in order to simulate
+    * user interaction on it. Calling `tearDown()` will remove it again.
+    *
+    * Note that calling this method for an activity has no effect and hence is unnessecary.
+    *
+    * @return {Node}
+    *    the widget DOM fragment
+    *
+    * @memberOf Widget
+    */
+   render() {
+      widgetPrivateApi.renderTo( anchorElement );
+      return anchorElement.firstChild;
+   }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function decoratedAdapter( adapter ) {
+   return {
+      technology: adapter.technology,
+      bootstrap( modules, services, domRoot ) {
+         laxarServices = services;
+         eventBus = createAxEventBusMock();
+         const adapterFactory = adapter.bootstrap( modules, services, domRoot );
+         return {
+            ...adapterFactory,
+            serviceDecorators: createServiceDecoratorsFactory( adapterFactory ),
+            create( ...args ) {
+               adapterInstance = adapterFactory.create( ...args );
+               return adapterInstance;
+            }
          };
+      }
+   };
 
-         fn.debounce.waiting.push( run );
-         run.timeout = timeout;
-         return timeout;
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   function createServiceDecoratorsFactory( adapterFactory ) {
+      return function serviceDecorators() {
+         return {
+            ...( adapterFactory.serviceDecorators || noOp )(),
+            axAssets: () => createAxAssetsMock( /* TODO pass artifacts listing */ ),
+            axConfiguration: () => createAxConfigurationMock( /* TODO pass configuration data */ ),
+            axEventBus: eventBus => {
+               const methods = [ 'subscribe', 'publish', 'publishAndGatherReplies', 'addInspector' ];
+               methods.forEach( method => {
+                  spyOn( eventBus, method ).and.callThrough();
+               } );
+               return eventBus;
+            },
+            axFlowService: () => createAxFlowServiceMock(),
+            axGlobalEventBus: () => eventBus,
+            axGlobalLog: () => createAxLogMock(),
+            axGlobalStorage: () => createAxGlobalStorageMock(),
+            axHeartbeat: () => createAxHeartbeatMock(),
+            axI18n: i18n => createAxI18nMock( i18n ),
+            axLog: () => createAxLogMock(),
+            axStorage: () => createAxStorageMock(),
+            axVisibility: () => createAxVisibilityMock()
+         };
+      };
+   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Removes any DOM fragments of the widget and calls the appropriate destructors. It is advised to call
+ * this once in an `afterEach` call. Passing this function directly to `afterEach` works as well.
+ *
+ * Example.
+ * ```js
+ * afterEach( axMocks.tearDown );
+ * ```
+ */
+export function tearDown() {
+   widgetPrivateApi.destroy();
+   if( anchorElement && anchorElement.parentElement ) {
+      anchorElement.parentElement.removeChild( anchorElement );
+      anchorElement = null;
+   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const defaultEvents = [
+   {
+      topic: 'didChangeLocale',
+      subtopics: {
+         'default': {
+            locale: 'default',
+            languageTag: 'en'
+         }
+      }
+   },
+   {
+      topic: 'didChangeLocale',
+      subtopics: {
+         'default': {
+            theme: 'default'
+         }
+      }
+   },
+   {
+      topic: 'beginLifecycleRequest',
+      subtopics: {
+         'default': {
+            lifecycleId: 'default'
+         }
+      }
+   },
+   {
+      topic: 'didChangeAreaVisibility',
+      subtopics: {
+         'content.true': {
+            area: 'content',
+            visible: true
+         }
+      }
+   },
+   {
+      topic: 'didNavigate',
+      subtopics: {
+         testing: {
+            place: 'testing',
+            target: '_self',
+            data: {}
+         }
+      }
+   }
+];
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Triggers all events normally published by the runtime after instantiation of the controller. This
+ * includes the following events, listed with their payloads in the order they are published:
+ *
+ * **1. didChangeLocale.default:**
+ * ```js
+ * {
+ *    locale: 'default',
+ *    languageTag: 'en'
+ * }
+ * ```
+ * **2. didChangeTheme.default:**
+ * ```js
+ * {
+ *    theme: 'default'
+ * }
+ * ```
+ * **3. beginLifecycleRequest.default:**
+ * ```js
+ * {
+ *    lifecycleId: 'default'
+ * }
+ * ```
+ * **4. didChangeAreaVisibility.content.true:**
+ * ```js
+ * {
+ *    area: 'content',
+ *    visible: true
+ * }
+ * ```
+ * **5. didNavigate.testing:**
+ * ```js
+ * {
+ *    place: 'testing',
+ *    target: '_self',
+ *    data: {}
+ * }
+ * ```
+ *
+ * Via the `optionalEvents` argument it is possible to add events with different topic suffixes, to
+ * overwrite events defined above, or to completely prevent from triggering one of the events. To do so
+ * simply pass a map, where the primary topics are the keys and the value is a map from topic suffix to
+ * payload. If the value is `null`, the specific event is not published.
+ *
+ * Example:
+ * ```js
+ * axMocks.triggerStartupEvents( {
+ *    didChangeLocale: {
+ *       alternative: {
+ *          locale: 'alternative',
+ *          languageTag: 'de'
+ *       }
+ *    },
+ *    didChangeTheme: {
+ *       'default': null
+ *    },
+ *    didNavigate: {
+ *       testing: {
+ *          place: 'testing',
+ *          target: '_self',
+ *          data: {
+ *             user: 'Peter',
+ *             articleId: '1234'
+ *          }
+ *       }
+ *    }
+ * } );
+ * ```
+ *
+ * The effect of this call is the following:
+ * 1. There will be two *didChangeLocale* events: *didChangeLocale.default*, carrying the language tag *en*
+ *    in its payload, and *didChangeLocale.alternative*, carrying the language tag *de* in its payload.
+ * 2. There will be no *didChangeTheme* event, since the only pre-configured one is set to `null`.
+ * 3. The parameters of the *didNavigate.testing* event are changed to be
+ *    `{ user: 'Peter', articleId: '1234' }`.
+ *
+ * @param {Object} [optionalEvents]
+ *    optional map of user defined events
+ *
+ */
+export function triggerStartupEvents( optionalEvents = {} ) {
+   defaultEvents
+      .map( ({ topic, subtopics }) => ({
+         topic,
+         subtopics: { ...subtopics, ...optionalEvents[ topic ] }
+      }) )
+      .forEach( ({ topic, subtopics }) => {
+         Object.keys( subtopics )
+            .filter( key => subtopics[ key ] != null )
+            .forEach( key => {
+               eventBus.publish( `${topic}.${key}`, subtopics[ key ] );
+            } );
+         eventBus.flush();
+      } );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Creates the setup function for a widget test. The returned function is asynchronous and should simply be
+ * passed to `beforeEach`. By doing so, the handling of the Jasmine `done` callback happens under the hood.
+ * To receive the widget descriptor (i.e. the contents of the `widget.json` file) the use of the RequireJS
+ * *json* plugin is advised.
+ *
+ * Example:
+ * ```js
+ * define( [
+ *    'json!../widget.json',
+ *    'laxar-mocks'
+ * ], function( descriptor, axMocks ) {
+ *    'use strict';
+ *
+ *    describe( 'An ExampleWidget', function() {
+ *
+ *       beforeEach( testing.createSetupForWidget( descriptor ) );
+ *
+ *       // ... widget configuration, loading and your tests
+ *
+ *       afterEach( axMocks.tearDown );
+ *
+ *    } );
+ * } );
+ * ```
+ *
+ * @param {Object} descriptor
+ *    the widget descriptor (taken from `widget.json`)
+ * @param {Object} [optionalOptions]
+ *    optional map of options
+ * @param {Object} [optionalOptions.adapter=laxar.plainAdapter]
+ *    a technology adapter to use for this widget.
+ *    When using a custom integration technology (something other than "plain" or "angular"), pass the
+ *    adapter module using this option.
+ * @param {Object} [optionalOptions.artifacts={}]
+ *    an artifacts listing containing all assets for the widget and its controls
+ * @param {Object} [optionalOptions.configuration={}]
+ *    mock configuration data to use when testing the widget
+ *
+ * @return {Function}
+ *    a function to directly pass to `beforeEach`, accepting a Jasmine `done` callback
+ */
+export function createSetupForWidget( descriptor, optionalOptions = {} ) {
+   return done => {
+      const { artifacts = {}, adapter = plainAdapter, configuration = {} } = {
+         ...fixtures[ descriptor.name ],
+         ...optionalOptions
+      };
+
+      let htmlTemplate;
+      let features = {};
+      let loadContext;
+
+      assert.state(
+         adapter.technology === descriptor.integration.technology,
+         `laxar-mocks: Widget is using technology "${descriptor.integration.technology}", ` +
+         `but adapter is for "${adapter.technology}". ` +
+         'Pass the correct adapter as option "adapter" to `createSetupForWidget`.'
+      );
+
+      if( anchorElement && anchorElement.parentElement ) {
+         anchorElement.parentElement.removeChild( anchorElement );
+      }
+      anchorElement = document.createElement( 'DIV' );
+      anchorElement.id = 'widgetContainer';
+      document.body.appendChild( anchorElement );
+
+      bootstrap( anchorElement, {
+         widgetAdapters: [ decoratedAdapter( adapter ) ],
+         configuration,
+         artifacts
       } );
 
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+      widgetPrivateApi.configure = ( keyOrConfiguration, optionalValue ) => {
+         if( optionalValue === undefined ) {
+            features = keyOrConfiguration;
+         }
+         else {
+            features[ keyOrConfiguration ] = optionalValue;
+         }
+      };
 
-      function flush() {
-         fn.debounce.waiting.forEach( function( run ) {
-            run( true );
+      widgetPrivateApi.load = () =>
+         laxarServices.widgetLoader.load( {
+            id: 'test-widget',
+            widget: descriptor.name,
+            features
+         }, {
+            onBeforeControllerCreation( _, services ) {
+               // avoid creating services that were not actually injected:
+               Object.keys( services ).forEach( k => {
+                  delete widget[ k ];
+                  Object.defineProperty( widget, k, {
+                     configurable: true,
+                     get: () => services[ k ]
+                  } );
+               } );
+            }
+         } )
+         .then( _ => {
+            loadContext = _;
+            return loadContext.templatePromise;
+         } )
+         .then( _ => {
+            htmlTemplate = _;
          } );
-         fn.debounce.waiting.splice( 0 );
-      }
 
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+      widgetPrivateApi.destroy = () => {
+         if( adapter.reset ) {
+            adapter.reset();
+         }
+         if( loadContext ) {
+            loadContext.destroy();
+            loadContext = null;
+         }
+      };
 
-      function removeWaiting( timeout ) {
-         fn.debounce.waiting = fn.debounce.waiting.filter( function( waiting ) {
-            return waiting.timeout !== timeout;
-         } );
-      }
+      widgetPrivateApi.renderTo = container => {
+         adapterInstance.domAttachTo( container, htmlTemplate );
+      };
+
+      done();
+   };
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function handleErrorForJasmine( err ) {
+   if( window.console && window.console.error ) {
+      window.console.error( err );
    }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   function dirname( file ) {
-      return file.substr( 0, file.lastIndexOf( '/' ) );
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   var scheduledFunctions = [];
-   function eventBusTick( func ) {
-      scheduledFunctions.push( func );
-   }
-
-   function flushEventBusTicks( applyViewChanges ) {
-      while( scheduledFunctions.length > 0 ) {
-         var funcs = scheduledFunctions.slice( 0 );
-         scheduledFunctions = [];
-         funcs.forEach( function( func ) { func(); } );
-         applyViewChanges();
-      }
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   function handleErrorForJasmine( err ) {
-      if( window.console && window.console.error ) {
-         window.console.error( err );
-      }
-      jasmine.getEnv().fail( err );
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   function configurePromisePolyfill() {
-      // First search for fast alternatives to internal tick of native Promise
-      if( typeof window.setImmediate === 'function' ) {
-         Promise._setImmediateFn( window.setImmediate );
-      }
-      else if( typeof MessageChannel !== 'undefined' ) {
-         // Taken from Q:
-         // https://github.com/kriskowal/q/blob/0428c15d2ffc8e874b4be3a50e92884ef8701a6f/q.js#L125-141
-         // Copyright 2009-2012 Kris Kowal under the terms of the MIT
-         var channel = new MessageChannel();
-         // linked list of tasks (single, with head node)
-         var head = {}, tail = head;
-         channel.port1.onmessage = function () {
-            var next = head.next;
-            var task = next.task;
-            head = next; task();
-         };
-
-         Promise._setImmediateFn( function (task) {
-            tail = tail.next = {task: task};
-            channel.port2.postMessage();
-         } );
-      }
-      else {
-         // If nothing else helps:
-         // get a mock free reference to setTimeout before someone mocks it on the window object
-         var windowSetTimeout = window.setTimeout;
-         Promise._setImmediateFn( function( callback ) {
-            windowSetTimeout( callback, 0 );
-         } );
-      }
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   return axMocks;
-
-} );
+   jasmine.getEnv().fail( err );
+}

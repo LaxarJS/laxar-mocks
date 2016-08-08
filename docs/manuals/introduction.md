@@ -25,10 +25,8 @@ define( [
       var widgetDom;
 
       // 2. Test Setup
-      beforeEach( axMocks.createSetupForWidget( descriptor, {
-         knownMissingResources: [ 'ax-i18n-control.css' ]
-      } ) );
-      
+      beforeEach( axMocks.createSetupForWidget( descriptor ) );
+
       // 3. Widget Configuration
       beforeEach( function() {
          axMocks.widget.configure( {
@@ -38,10 +36,10 @@ define( [
             }
          } );
       } );
-      
+
       // 4. Loading the Widget
       beforeEach( axMocks.widget.load );
-      
+
       beforeEach( function() {
          // 5. Optional: Rendering the Widget DOM
          widgetDom = axMocks.widget.render();
@@ -63,9 +61,9 @@ define( [
 
       // 9. Test Tear-Down
       afterEach( axMocks.tearDown );
-      
+
    } );
-   
+
 } );
 ```
 
