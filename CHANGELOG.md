@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v2.0.0-alpha.0
+
 - [#26](https://github.com/LaxarJS/laxar-mocks/issues/26): updated for LaxarJS v2.0 compatibility
     + **BREAKING CHANGE:** see ticket for details
 - [#24](https://github.com/LaxarJS/laxar-mocks/issues/24): documentation: added missing information on the widget ID
