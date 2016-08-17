@@ -159,10 +159,10 @@ export const widget = {
 function decoratedAdapter( adapter ) {
    return {
       technology: adapter.technology,
-      bootstrap( modules, services, domRoot ) {
+      bootstrap( artifacts, services, domRoot ) {
          laxarServices = services;
          eventBus = createAxEventBusMock();
-         const adapterFactory = adapter.bootstrap( modules, services, domRoot );
+         const adapterFactory = adapter.bootstrap( artifacts, services, domRoot );
          return {
             ...adapterFactory,
             serviceDecorators: createServiceDecoratorsFactory( adapterFactory ),
@@ -459,8 +459,9 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
             widget: descriptor.name,
             features
          }, {
-            onBeforeControllerCreation( _, services ) {
-               // avoid creating services that were not actually injected:
+            onBeforeControllerCreation( services ) {
+               // Grab the widget injections and make them available to tests.
+               // Do this lazy, to avoid creating services that where not actually injected.
                Object.keys( services ).forEach( k => {
                   delete widget[ k ];
                   Object.defineProperty( widget, k, {
@@ -479,12 +480,12 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
          } );
 
       widgetPrivateApi.destroy = () => {
-         if( adapter.reset ) {
-            adapter.reset();
-         }
          if( loadContext ) {
             loadContext.destroy();
             loadContext = null;
+         }
+         if( adapter.reset ) {
+            adapter.reset();
          }
       };
 
