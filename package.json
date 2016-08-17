@@ -20,7 +20,7 @@
     "test": "npm run karma && npm run eslint"
   },
   "dependencies": {
-    "laxar": "^2.0.0-alpha.8"
+    "laxar": "^2.0.0-alpha.9"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",

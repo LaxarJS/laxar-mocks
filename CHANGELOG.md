@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#27](https://github.com/LaxarJS/laxar-mocks/issues/27): updated for LaxarJS v2.0 compatibility (laxar#358)
+
 
 ## v2.0.0-alpha.0
 

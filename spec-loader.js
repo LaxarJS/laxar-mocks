@@ -44,7 +44,7 @@ module.exports = function( content ) {
       `require( 'laxar-mocks' ).fixtures[ ${JSON.stringify(name)} ] = {
          adapter: ${dependency('adapter')},
          artifacts: ${dependency('artifacts')},
-         configuration: { base: '/' }
+         configuration: { baseHref: '/' }
       }`,
       content
    ].join( ';' );
