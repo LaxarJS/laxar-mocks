@@ -33,10 +33,6 @@ const nextTick = f => {
 
 const noOp = () => {};
 
-let laxarServices;
-let anchorElement;
-let adapterInstance;
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -53,6 +49,13 @@ export const fixtures = {};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export let eventBus;
+
+let adapterInstance;
+let adapter;
+let anchorElement;
+let artifacts;
+let configuration;
+let laxarServices;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -180,8 +183,11 @@ function decoratedAdapter( adapter ) {
       return function serviceDecorators() {
          return {
             ...( adapterFactory.serviceDecorators || noOp )(),
-            axAssets: () => createAxAssetsMock( /* TODO pass artifacts listing */ ),
-            axConfiguration: () => createAxConfigurationMock( /* TODO pass configuration data */ ),
+            axAssets: () => {
+               const { assets } = artifacts.widgets[ 0 ];
+               return createAxAssetsMock( assets );
+            },
+            axConfiguration: () => createAxConfigurationMock( configuration ),
             axEventBus: eventBus => {
                const methods = [ 'subscribe', 'publish', 'publishAndGatherReplies', 'addInspector' ];
                methods.forEach( method => {
@@ -415,10 +421,10 @@ export function triggerStartupEvents( optionalEvents = {} ) {
  */
 export function createSetupForWidget( descriptor, optionalOptions = {} ) {
    return done => {
-      const { artifacts = {}, adapter = plainAdapter, configuration = {} } = {
+      ({ artifacts = {}, adapter = plainAdapter, configuration = {} } = {
          ...fixtures[ descriptor.name ],
          ...optionalOptions
-      };
+      });
 
       let htmlTemplate;
       let features = {};

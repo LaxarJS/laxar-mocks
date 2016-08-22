@@ -18,11 +18,7 @@ describe( 'A laxar-mocks test runner', () => {
       beforeEach( done => {
          descriptor = createFakeDescriptor( 'some-activity', 'activity' );
          create = jasmine.createSpy( 'widgetModule.create' );
-         artifacts = createFakeArtifacts( descriptor, {
-            create,
-            // TODO (after laxar#358): remove
-            name: 'some-activity'
-         } );
+         artifacts = createFakeArtifacts( descriptor, { create } );
          configuration = { baseHref: '/' };
          axMocks.createSetupForWidget( descriptor, { artifacts, configuration } )( done );
       } );
@@ -77,10 +73,8 @@ describe( 'A laxar-mocks test runner', () => {
             onDomAvailable: () => {}
          }) );
          artifacts = createFakeArtifacts( descriptor, {
-            injections: [ 'axFeatures', 'axStorage', 'axLog' ],
-            create,
-            // TODO (after laxar#358): remove
-            name: 'some-widget'
+            injections: [ 'axFeatures', 'axStorage', 'axLog', 'axConfiguration', 'axAssets' ],
+            create
          } );
          configuration = { baseHref: '/' };
          axMocks.createSetupForWidget( descriptor, { artifacts, configuration } )( done );
@@ -99,17 +93,19 @@ describe( 'A laxar-mocks test runner', () => {
 
          it( 'instantiates the widget controller with the requested injections', () => {
             expect( create ).toHaveBeenCalled();
-            const [ features, storage, log ] = create.calls.mostRecent().args;
+            const [ features, storage, log, configuration, assets ] = create.calls.mostRecent().args;
             expect( features ).toEqual( { someFeature: 'someValue', other: 'default' } );
             expect( storage.local.setItem ).toEqual( jasmine.any( Function ) );
             expect( log.info ).toEqual( jasmine.any( Function ) );
+            expect( configuration.get ).toEqual( jasmine.any( Function ) );
+            expect( assets ).toEqual( jasmine.any( Function ) );
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
          it( 'provides a mock-storage injection without side-effects', () => {
             expect( create ).toHaveBeenCalled();
-            const [ , storage ] = create.calls.mostRecent().args;
+            const storage = create.calls.mostRecent().args[ 1 ];
             storage.mockBackends.session.test = '"mockValue"';
             expect( storage.session.getItem( 'test' ) ).toEqual( 'mockValue' );
          } );
@@ -117,9 +113,31 @@ describe( 'A laxar-mocks test runner', () => {
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
          it( 'provides a mock-log injection without side-effects', () => {
-            const [ , , log ] = create.calls.mostRecent().args;
+            const log = create.calls.mostRecent().args[ 2 ];
             log.error( 'test error' );
             expect( log.error ).toHaveBeenCalled();
+         } );
+
+         /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+         it( 'provides a mock-configuration injection with the values given to setup', () => {
+            const configuration = create.calls.mostRecent().args[ 3 ];
+            expect( configuration.get( 'baseHref' ) ).toEqual( '/' );
+            expect( configuration.get ).toHaveBeenCalled();
+         } );
+
+         /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+         it( 'provides a mock-assets injection with the values given to setup', done => {
+            const assets = create.calls.mostRecent().args[ 4 ];
+
+            assets.forTheme( 'some-widget.html' )
+               .then( html => {
+                  expect( html ).toEqual( '<h1>hey</h1>' );
+               } )
+               .then( done, done.fail );
+
+            expect( assets.forTheme ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
