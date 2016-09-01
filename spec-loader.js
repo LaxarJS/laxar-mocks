@@ -31,13 +31,13 @@ module.exports = function( content ) {
    }
 
    const widgetDirectory = this.resource.replace( /\/spec\/[^\/]+$/, '' );
-   const ref = `amd:./${path.relative( process.cwd(), widgetDirectory )}`;
+   const ref = `module:./${path.relative( process.cwd(), widgetDirectory )}`;
    const descriptor = require( `${widgetDirectory}/widget.json` );
    const name = descriptor.name;
    const technology = descriptor.integration.technology;
    const dependencies = {
       adapter: technology === 'plain' ? null : `laxar-${technology}-adapter`,
-      artifacts: `laxar-loader/entry?widget=${ref}`
+      artifacts: `laxar-loader/artifacts?widget=${ref}`
    };
 
    return [
