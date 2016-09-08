@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+## v1.1.0
+
 - [#29](https://github.com/LaxarJS/laxar-mocks/issues/29): fixed axGlobalEventBus injection
 - [#24](https://github.com/LaxarJS/laxar-mocks/issues/24): documentation: added missing information on the widget ID
 
