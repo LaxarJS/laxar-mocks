@@ -10,6 +10,7 @@
  */
 import { assert, bootstrap, plainAdapter } from 'laxar';
 import {
+   createAxAreaHelperMock,
    createAxAssetsMock,
    createAxConfigurationMock,
    createAxEventBusMock,
@@ -32,6 +33,15 @@ const nextTick = f => {
 };
 
 const noOp = () => {};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * The id used for the widget instance loaded in the test environment.
+ *
+ * @type {String}
+ */
+export const TEST_WIDGET_ID = 'test-widget';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -183,6 +193,7 @@ function decoratedAdapter( adapter ) {
       return function serviceDecorators() {
          return {
             ...( adapterFactory.serviceDecorators || noOp )(),
+            axAreaHelper: () => createAxAreaHelperMock( { widget: { id: TEST_WIDGET_ID } } ),
             axAssets: () => {
                const { assets } = artifacts.widgets[ 0 ];
                return createAxAssetsMock( assets );
@@ -462,7 +473,7 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
 
       widgetPrivateApi.load = done =>
          laxarServices.widgetLoader.load( {
-            id: 'test-widget',
+            id: TEST_WIDGET_ID,
             widget: descriptor.name,
             features
          }, {
