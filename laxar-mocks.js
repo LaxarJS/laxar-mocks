@@ -50,7 +50,7 @@ export const fixtures = {};
 
 export let eventBus;
 
-let adapterInstance;
+let adapterInstancePromise;
 let adapter;
 let anchorElement;
 let artifacts;
@@ -170,8 +170,8 @@ function decoratedAdapter( adapter ) {
             ...adapterFactory,
             serviceDecorators: createServiceDecoratorsFactory( adapterFactory ),
             create( ...args ) {
-               adapterInstance = adapterFactory.create( ...args );
-               return adapterInstance;
+               adapterInstancePromise = Promise.resolve( adapterFactory.create( ...args ) );
+               return adapterInstancePromise;
             }
          };
       }
@@ -449,6 +449,7 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
          configuration,
          artifacts
       } );
+      let adapterInstance;
 
       widgetPrivateApi.configure = ( keyOrConfiguration, optionalValue ) => {
          if( optionalValue === undefined ) {
@@ -459,7 +460,7 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
          }
       };
 
-      widgetPrivateApi.load = () =>
+      widgetPrivateApi.load = done =>
          laxarServices.widgetLoader.load( {
             id: 'test-widget',
             widget: descriptor.name,
@@ -483,7 +484,12 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
          } )
          .then( _ => {
             htmlTemplate = _;
-         } );
+            return adapterInstancePromise;
+         } )
+         .then( _ => {
+            adapterInstance = _;
+         } )
+         .then( done );
 
       widgetPrivateApi.destroy = () => {
          if( loadContext ) {

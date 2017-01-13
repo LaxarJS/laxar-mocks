@@ -30,7 +30,7 @@ module.exports = function( content ) {
       this.cacheable();
    }
 
-   const widgetDirectory = this.resource.replace( /\/spec\/[^\/]+$/, '' );
+   const widgetDirectory = this.resource.replace( /\/spec\/[^/]+$/, '' );
    const ref = `module:./${path.relative( process.cwd(), widgetDirectory )}`;
    const descriptor = require( `${widgetDirectory}/widget.json` );
    const name = descriptor.name;

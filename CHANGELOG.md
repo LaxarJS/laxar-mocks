@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#32](https://github.com/LaxarJS/laxar-mocks/issues/32): adapters with asynchronous create method are now supported
 - [#28](https://github.com/LaxarJS/laxar-mocks/issues/28): fixed mock injections for axAssets and axConfiguration
 - [#27](https://github.com/LaxarJS/laxar-mocks/issues/27): updated for LaxarJS v2.0 compatibility (laxar#358)
 
