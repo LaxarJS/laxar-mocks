@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#33](https://github.com/LaxarJS/laxar-mocks/issues/33): features: validate widget features at runtime
 - [#34](https://github.com/LaxarJS/laxar-mocks/issues/34): services: a mocked area helper service can now be injected
 - [#32](https://github.com/LaxarJS/laxar-mocks/issues/32): adapters with asynchronous create method are now supported
 - [#28](https://github.com/LaxarJS/laxar-mocks/issues/28): fixed mock injections for axAssets and axConfiguration

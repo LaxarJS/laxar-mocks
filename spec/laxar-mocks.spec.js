@@ -16,7 +16,7 @@ describe( 'A laxar-mocks test runner', () => {
       let create;
 
       beforeEach( done => {
-         descriptor = createFakeDescriptor( 'some-activity', 'activity' );
+         descriptor = createFakeDescriptor( 'some-activity', 'activity', null );
          create = jasmine.createSpy( 'widgetModule.create' );
          artifacts = createFakeArtifacts( descriptor, { create } );
          configuration = { baseHref: '/' };
@@ -65,6 +65,7 @@ describe( 'A laxar-mocks test runner', () => {
                   type: 'string'
                },
                other: {
+                  type: 'string',
                   default: 'default'
                }
             }

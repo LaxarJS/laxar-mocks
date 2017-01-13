@@ -8,7 +8,7 @@
  *
  * @module laxar-mocks
  */
-import { assert, bootstrap, plainAdapter } from 'laxar';
+import { assert, bootstrap, plainAdapter, object } from 'laxar';
 import {
    createAxAreaHelperMock,
    createAxAssetsMock,
@@ -22,6 +22,8 @@ import {
    createAxStorageMock,
    createAxVisibilityMock
 } from 'laxar/laxar-widget-service-mocks';
+
+import { create as createAjv } from 'laxar-tooling/lib/ajv';
 
 const widgetPrivateApi = {};
 
@@ -472,10 +474,11 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
       };
 
       widgetPrivateApi.load = done =>
+
          laxarServices.widgetLoader.load( {
             id: TEST_WIDGET_ID,
             widget: descriptor.name,
-            features
+            features: validate( features, descriptor )
          }, {
             onBeforeControllerCreation( services ) {
                // Grab the widget injections and make them available to tests.
@@ -518,6 +521,25 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
 
       done();
    };
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function validate( features, descriptor ) {
+   const newFeatures = object.deepClone( features );
+   if( descriptor.features ) {
+      const validate = createAjv().compile(
+         descriptor.features,
+         descriptor.name,
+         { isFeaturesValidator: true }
+      );
+
+      const valid = validate( newFeatures );
+      if( !valid ) {
+         throw validate.error();
+      }
+   }
+   return newFeatures;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
