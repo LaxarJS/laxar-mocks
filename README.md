@@ -30,3 +30,30 @@ Usually, it is easiest to use the `spec-loader` bundled with `laxar-mocks` so th
 ```
 
 Then, simply write regular Jasmine 2 tests, and use the [LaxarJS Mocks API](docs/api/laxar-mocks.js.md) to instantiate your widgets.
+
+
+### Hacking the library
+
+Instead of using a pre-compiled library within a project, you can also clone this repository:
+
+```sh
+git clone https://github.com/LaxarJS/laxar-mocks.git
+cd laxar-mocks
+npm install
+```
+
+To see changes in your application, either configure your project to work with the sources (e.g. by using webpack), or rebuild the webpack bundles by running `npm run dist`.
+
+To run the automated karma tests:
+
+```sh
+npm test
+```
+
+To generate HTML spec runners for opening in your web browser, so that you can e.g. use the browser's developer tools:
+
+```sh
+npm run browser-spec
+```
+
+Now you can select a spec-runner by browsing to http://localhost:8082/spec-output/.

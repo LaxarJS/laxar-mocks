@@ -1,5 +1,8 @@
 # Changelog
 
+- [#35](https://github.com/LaxarJS/laxar-patterns/issues/35): project: updated dev-dependencies, upgraded to webpack 2
+
+
 ## Last Changes
 
 - [#33](https://github.com/LaxarJS/laxar-mocks/issues/33): features: validate widget features at runtime

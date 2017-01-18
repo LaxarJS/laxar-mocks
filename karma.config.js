@@ -1,8 +1,8 @@
 // Karma configuration for LaxarJS core
 /* eslint-env node */
 
-const webpackConfig = Object.assign( {}, require('./webpack.base.config' ) );
-delete webpackConfig.entry[ 'laxar-mocks' ];
+const webpackConfig = Object.assign( {}, require('./webpack.config' ) );
+delete webpackConfig.entry;
 delete webpackConfig.plugins;
 webpackConfig.devtool = 'inline-source-map';
 
