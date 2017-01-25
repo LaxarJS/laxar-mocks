@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v1.1.1
+
 - [#36](https://github.com/LaxarJS/laxar-mocks/issues/36): relaxed laxar dependency (we use semver)
 
 
