@@ -480,7 +480,7 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
             widget: descriptor.name,
             features: validate( features, descriptor )
          }, {
-            onBeforeControllerCreation( services ) {
+            whenServicesAvailable( services ) {
                // Grab the widget injections and make them available to tests.
                // Do this lazy, to avoid creating services that where not actually injected.
                Object.keys( services ).forEach( k => {

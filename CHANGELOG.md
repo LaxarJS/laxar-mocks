@@ -1,6 +1,7 @@
 # Changelog
 
-- [#35](https://github.com/LaxarJS/laxar-patterns/issues/35): project: updated dev-dependencies, upgraded to webpack 2
+- [#37](https://github.com/LaxarJS/laxar-mocks/issues/37): adapted to laxar API change (LaxarJS/laxar#413)
+- [#35](https://github.com/LaxarJS/laxar-mocks/issues/35): project: updated dev-dependencies, upgraded to webpack 2
 
 
 ## Last Changes
