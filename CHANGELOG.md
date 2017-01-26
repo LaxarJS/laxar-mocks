@@ -1,11 +1,12 @@
 # Changelog
 
-- [#37](https://github.com/LaxarJS/laxar-mocks/issues/37): adapted to laxar API change (LaxarJS/laxar#413)
-- [#35](https://github.com/LaxarJS/laxar-mocks/issues/35): project: updated dev-dependencies, upgraded to webpack 2
-
-
 ## Last Changes
 
+
+## v2.0.0-alpha.1
+
+- [#37](https://github.com/LaxarJS/laxar-mocks/issues/37): adapted to laxar API change (LaxarJS/laxar#413)
+- [#35](https://github.com/LaxarJS/laxar-mocks/issues/35): project: updated dev-dependencies, upgraded to webpack 2
 - [#33](https://github.com/LaxarJS/laxar-mocks/issues/33): features: validate widget features at runtime
 - [#34](https://github.com/LaxarJS/laxar-mocks/issues/34): services: a mocked area helper service can now be injected
 - [#32](https://github.com/LaxarJS/laxar-mocks/issues/32): adapters with asynchronous create method are now supported
