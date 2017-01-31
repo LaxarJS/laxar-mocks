@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#39](https://github.com/LaxarJS/laxar-mocks/issues/39): added "browser" target to `package.json`
 - [#38](https://github.com/LaxarJS/laxar-mocks/issues/38): fixed reporting of AJV validation errors
 
 
