@@ -528,7 +528,8 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
 function validate( features, descriptor ) {
    const newFeatures = object.deepClone( features );
    if( descriptor.features ) {
-      const validate = createAjv().compile(
+      const jsonSchema = createAjv();
+      const validate = jsonSchema.compile(
          descriptor.features,
          descriptor.name,
          { isFeaturesValidator: true }
@@ -536,7 +537,7 @@ function validate( features, descriptor ) {
 
       const valid = validate( newFeatures );
       if( !valid ) {
-         throw validate.error();
+         throw jsonSchema.error( `Validation failed for widget "${name}"`, validate.errors );
       }
    }
    return newFeatures;

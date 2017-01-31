@@ -54,7 +54,7 @@ define( [
       } );
 
       // 8. Tests
-      it( 'subscribes to didReplace events for the search resource', function() {
+      it( 'subscribes to didReplace events for the example resource', function() {
          expect( axMocks.widget.axEventBus.subscribe )
             .toHaveBeenCalledWith( 'didReplace.exampleResource', jasmine.any( Function ) );
       } );

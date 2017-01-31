@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#38](https://github.com/LaxarJS/laxar-mocks/issues/38): fixed reporting of AJV validation errors
+
 
 ## v2.0.0-alpha.1
 
