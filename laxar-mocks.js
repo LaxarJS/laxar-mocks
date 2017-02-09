@@ -39,8 +39,9 @@ const noOp = () => {};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * The id used for the widget instance loaded in the test environment.
+ * The ID used for the widget instance loaded in the test environment.
  *
+ * @name TEST_WIDGET_ID
  * @type {String}
  */
 export const TEST_WIDGET_ID = 'test-widget';
@@ -48,13 +49,16 @@ export const TEST_WIDGET_ID = 'test-widget';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * A map from widget names to setup-options (an object per widget name).
+ * Can be used to specify setup-fixtures for widget/activity tests.
  *
  * Spec-runners may add entries to this map to provision widget specs with options that will automatically be
- * picked up by `createSetupForWidget`. For example, the laxar-mocks spec-loader for webpack puts the
- * `artifacts` and `adapter` options here.
+ * picked up by `setupForWidget`. For example, the laxar-mocks spec-loader for webpack puts the `artifacts`,
+ * `adapter` and `descriptor` options here.
  *
- * Options set by the spec-test when calling `createSetupForWidget` will take precedence over these values.
+ * Options passed by the spec-test to `setupForWidget` will take precedence over these values.
+ *
+ * @name fixtures
+ * @type {Object}
  */
 export const fixtures = {};
 
@@ -86,25 +90,29 @@ let laxarServices;
 export const widget = {
 
    /**
-    * Configures the widget features before loading with the given configuration object or key/value
-    * entries. In fact this is what you'd normally configure under the `features` key in a page descriptor.
+    * Allows the user to configures the widget features before loading.
+    *
+    * Configuration may be specified using
+    *  - a configuration object, similar to a `features` key within a page descriptor,
+    *  - a combination of feature path and value, allowing to conveniently override individual values.
     *
     * Shorthands may be used:
     *
-    * This
     * ```js
-    * beforeEach( function() {
+    * beforeEach( () => {
+    *    testing.widget.configure( 'search.resource', 'search' );
+    * } );
+    * ```
+    *
+    * If no previous configuration was given for other `search` sub-keys, this is equivalent to the following:
+    *
+    * ```js
+    * beforeEach( () => {
     *    testing.widget.configure( {
     *       search: {
     *          resource: 'search'
     *       }
     *    } );
-    * } );
-    * ```
-    * is equivalent to the following shorter version
-    * ```js
-    * beforeEach( function() {
-    *    testing.widget.configure( 'search.resource', 'search' );
     * } );
     * ```
     *
@@ -296,6 +304,8 @@ const defaultEvents = [
  * Triggers all events normally published by the runtime after instantiation of the controller. This
  * includes the following events, listed with their payloads in the order they are published:
  *
+ * ###### Default Lifecycle Events
+ *
  * **1. didChangeLocale.default:**
  * ```js
  * {
@@ -303,18 +313,21 @@ const defaultEvents = [
  *    languageTag: 'en'
  * }
  * ```
+ *
  * **2. didChangeTheme.default:**
  * ```js
  * {
  *    theme: 'default'
  * }
  * ```
+ *
  * **3. beginLifecycleRequest.default:**
  * ```js
  * {
  *    lifecycleId: 'default'
  * }
  * ```
+ *
  * **4. didChangeAreaVisibility.content.true:**
  * ```js
  * {
@@ -322,6 +335,7 @@ const defaultEvents = [
  *    visible: true
  * }
  * ```
+ *
  * **5. didNavigate.testing:**
  * ```js
  * {
@@ -331,9 +345,11 @@ const defaultEvents = [
  * }
  * ```
  *
+ * ###### Customizing the Lifecycle Events
+ *
  * Via the `optionalEvents` argument it is possible to add events with different topic suffixes, to
- * overwrite events defined above, or to completely prevent from triggering one of the events. To do so
- * simply pass a map, where the primary topics are the keys and the value is a map from topic suffix to
+ * overwrite events defined above, or to completely prevent from triggering any of the events. To do so
+ * pass a map, where the primary topics are the keys where each value is a map from topic suffix to
  * payload. If the value is `null`, the specific event is not published.
  *
  * Example:
@@ -391,54 +407,83 @@ export function triggerStartupEvents( optionalEvents = {} ) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Creates the setup function for a widget test. The returned function is asynchronous and should simply be
- * passed to `beforeEach`. By doing so, the handling of the Jasmine `done` callback happens under the hood.
- * To receive the widget descriptor (i.e. the contents of the `widget.json` file) the use of the RequireJS
- * *json* plugin is advised.
+ * Creates the setup function for a widget test, using externally provided fixtures.
  *
- * Example:
+ * This is the recommended way to setup your widget test. For this to work, *this* module's `fixtures` export
+ * needs to be initialized with the following properties:
+ *
+ *   - `descriptor` - the widget's JSON descriptor,
+ *   - `adapter` - the adapter module for the widget's integration technology (use `null` for "plain"),
+ *   - `artifacts` - an artifact listing containing the assets of the widget and its controls.
+ *
+ * When webpack loads spec-tests through the `laxar-mocks/spec-loader`, fixtures are provided automatically.
+ * To manually provide these fixtures, controlling every aspect of your test environment, pass them using the
+ * named `optionalOptions` parameter.
+ *
+ * The returned function is asynchronous and should simply be passed to `beforeEach`. By doing so, the Jasmine
+ * `done` callback is handled under the hood.
+ *
+ * ###### Example (ES 2015) `example-widget.spec.js`:
+ *
  * ```js
- * define( [
- *    'json!../widget.json',
- *    'laxar-mocks'
- * ], function( descriptor, axMocks ) {
- *    'use strict';
+ * import * as axMocks from 'laxar-mocks';
  *
- *    describe( 'An ExampleWidget', function() {
- *
- *       beforeEach( testing.createSetupForWidget( descriptor ) );
- *
- *       // ... widget configuration, loading and your tests
- *
- *       afterEach( axMocks.tearDown );
- *
- *    } );
+ * describe( 'An ExampleWidget', () => {
+ *    beforeEach( testing.setupForWidget() );
+ *    // ... widget configuration, loading and your tests ...
+ *    afterEach( axMocks.tearDown );
  * } );
  * ```
  *
- * @param {Object} descriptor
- *    the widget descriptor (taken from `widget.json`)
+ * When using the spec-loader, something like the following code will be generated:
+ *
+ * ```js
+ * ( fixtures => {
+ *    fixtures.descriptor = require( '../widget.json' );
+ *    fixtures.artifacts = require( 'laxar-loader?widget=example-widget' );
+ *    fixtures.adapter = require( 'laxar-' + fixtures.descriptor.integration.technology + '-adapter' );
+ * } )( require( 'laxar-mocks' ).fixtures );
+ * import * as axMocks from 'laxar-mocks';
+ *
+ * describe( 'An ExampleWidget', () => {
+ *    // ... same as above ...
+ * } );
+ * ```
  * @param {Object} [optionalOptions]
  *    optional map of options
- * @param {Object} [optionalOptions.adapter=laxar.plainAdapter]
- *    a technology adapter to use for this widget.
- *    When using a custom integration technology (something other than "plain" or "angular"), pass the
- *    adapter module using this option.
+ * @param {Object} [optionalOptions.adapter=undefined]
+ *    a widget-adapter matching the integration technology of the widget; omit if "plain"
  * @param {Object} [optionalOptions.artifacts={}]
- *    an artifacts listing containing all assets for the widget and its controls
- * @param {Object} [optionalOptions.configuration={}]
- *    mock configuration data to use when testing the widget
+ *    artifacts listing for this widget and its controls. Because it is hard to manually produce this
+ *    correctly, using the laxar-mocks spec-loader is recommended
+ * @param {Object} [optionalOptions.configuration={ baseHref: '/' }]
+ *    mock configuration data to use for the `axConfiguration` injection of the widget
+ * @param {Object} [optionalOptions.descriptor={}]
+ *    the contents of this widget's `widget.json`, including the JSON schema for the widget features
  *
  * @return {Function}
  *    a function to directly pass to `beforeEach`, accepting a Jasmine `done` callback
  */
-export function createSetupForWidget( descriptor, optionalOptions = {} ) {
-   return done => {
-      ({ artifacts = {}, adapter = plainAdapter, configuration = {} } = {
-         ...fixtures[ descriptor.name ],
-         ...optionalOptions
-      });
+export function setupForWidget( optionalOptions = {} ) {
+   assert( optionalOptions ).hasType( Object );
+   const setupFixtures = { configuration: { baseHref: '/' }, ...fixtures, ...optionalOptions };
+   ({ adapter = plainAdapter, artifacts, configuration = {} } = setupFixtures);
+   const { descriptor } = setupFixtures;
 
+   assert( artifacts ).isNotNull(
+      'laxar-mocks.setupForWidget: *artifacts* must be set as fixture (use spec-loader) or passed as option'
+   );
+   assert( adapter ).isNotNull(
+      'laxar-mocks.setupForWidget: the *adapter* option must not be set to null'
+   );
+   assert( configuration ).isNotNull(
+      'laxar-mocks.setupForWidget: the *configuration* option must not be set to null'
+   );
+   assert( descriptor ).isNotNull(
+      'laxar-mocks.setupForWidget: *descriptor* must be set as fixture (use spec-loader) or passed as option'
+   );
+
+   return done => {
       let htmlTemplate;
       let features = {};
       let loadContext;
@@ -465,11 +510,11 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
       let adapterInstance;
 
       widgetPrivateApi.configure = ( keyOrConfiguration, optionalValue ) => {
-         if( optionalValue === undefined ) {
-            features = keyOrConfiguration;
+         if( typeof keyOrConfiguration === 'string' ) {
+            object.setPath( features, keyOrConfiguration, optionalValue );
          }
          else {
-            features[ keyOrConfiguration ] = optionalValue;
+            features = object.deepClone( keyOrConfiguration );
          }
       };
 
@@ -482,7 +527,7 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
          }, {
             whenServicesAvailable( services ) {
                // Grab the widget injections and make them available to tests.
-               // Do this lazy, to avoid creating services that where not actually injected.
+               // Do this lazily to avoid creating services that where not actually injected.
                Object.keys( services ).forEach( k => {
                   delete widget[ k ];
                   Object.defineProperty( widget, k, {
@@ -521,6 +566,65 @@ export function createSetupForWidget( descriptor, optionalOptions = {} ) {
 
       done();
    };
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Creates the setup function for a widget test, using user-provided fixtures.
+ *
+ * This function exists for backwards compatibility with LaxarJS v1. It is recommended to use
+ * {@link #setupForWidget} instead, which does not expect the user to provide descriptor, artifacts listing
+ * and adapter module and instead relies on external tooling (such as the `laxar-mocks/spec-loader`).
+ *
+ * The returned function is asynchronous and should simply be passed to `beforeEach`. By doing so, the Jasmine
+ * `done` callback is handled under the hood.
+ *
+ * ### Example (ES 2015) `example-widget.spec.js`:
+ *
+ * ```js
+ * import * as axMocks from 'laxar-mocks';
+ *
+ * describe( 'An ExampleWidget', () => {
+ *    beforeEach( testing.createSetupForWidget( descriptor, {
+ *       artifacts: {
+ *          // ... should be generated, see laxar-tooling project for details ...
+ *       },
+ *       adapter: require( 'laxar-my-adapter' )
+ *    } ) );
+ *
+ *    // ... widget configuration, loading and your tests ...
+ *
+ *    afterEach( axMocks.tearDown );
+ * } );
+ * ```
+ *
+ * @deprecated use {@link #setupForWidget} instead
+ *
+ * @param {Object} descriptor
+ *    the widget descriptor (taken from `widget.json`)
+ * @param {Object} [optionalOptions]
+ *    optional map of options
+ * @param {Object} [optionalOptions.adapter=laxar.plainAdapter]
+ *    a technology adapter to use for this widget.
+ *    When using a custom integration technology (something other than "plain" or "angular"), pass the
+ *    adapter module using this option.
+ * @param {Object} [optionalOptions.artifacts={}]
+ *    an artifacts listing containing all assets for the widget and its controls
+ * @param {Object} [optionalOptions.configuration={}]
+ *    mock configuration data to use for the `axConfiguration` injection of the widget
+ *
+ * @return {Function}
+ *    a function to directly pass to `beforeEach`, accepting a Jasmine `done` callback
+ */
+export function createSetupForWidget( descriptor, optionalOptions = {} ) {
+   if( window.console && window.console.warn ) {
+      window.console.warn(
+         'laxar-mocks: DEPRECATION: `createSetupForWidget( args )` should be changed to `setupForWidget()`'
+      );
+   }
+   optionalOptions.descriptor = descriptor;
+   return setupForWidget( optionalOptions );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

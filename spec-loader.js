@@ -33,19 +33,27 @@ module.exports = function( content ) {
    const widgetDirectory = this.resource.replace( /\/spec\/[^/]+$/, '' );
    const ref = `module:./${path.relative( process.cwd(), widgetDirectory )}`;
    const descriptor = require( `${widgetDirectory}/widget.json` );
-   const name = descriptor.name;
    const technology = descriptor.integration.technology;
    const dependencies = {
       adapter: technology === 'plain' ? null : `laxar-${technology}-adapter`,
-      artifacts: `laxar-loader/artifacts?widget=${ref}`
+      artifacts: `laxar-loader/artifacts?widget=${ref}`,
+      descriptor: '../widget.json'
    };
 
    return [
-      `require( 'laxar-mocks' ).fixtures[ ${JSON.stringify(name)} ] = {
-         adapter: ${dependency('adapter')},
-         artifacts: ${dependency('artifacts')},
-         configuration: { baseHref: '/' }
-      }`,
+      `
+      ( function( fixtures, adapter, artifacts, descriptor ) {
+         fixtures.adapter = adapter;
+         fixtures.artifacts = artifacts;
+         fixtures.descriptor = descriptor;
+      } )(
+         require( 'laxar-mocks' ).fixtures,
+         ${dependency('adapter')},
+         ${dependency('artifacts')},
+         // cannot simply read descriptor from artifacts because the features schema may have been stripped:
+         ${dependency('descriptor')}
+      );
+      `,
       content
    ].join( ';' );
 
