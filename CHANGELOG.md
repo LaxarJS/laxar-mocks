@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+- [#41](https://github.com/LaxarJS/laxar-mocks/issues/41): new `setupForWidget` API, deprecated `createSetupForWidget`
+    + **BREAKING CHANGE:** see ticket for details
+
 
 ## v2.0.0-alpha.2
 

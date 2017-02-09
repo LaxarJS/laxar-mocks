@@ -29,7 +29,7 @@ Usually, it is easiest to use the `spec-loader` bundled with `laxar-mocks` so th
 }
 ```
 
-Then, simply write regular Jasmine 2 tests, and use the [LaxarJS Mocks API](docs/api/laxar-mocks.js.md) to instantiate your widgets.
+Then, simply write regular Jasmine 2 tests, and use the [LaxarJS Mocks API](docs/api/laxar-mocks.md) to instantiate your widgets.
 
 
 ### Hacking the library
