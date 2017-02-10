@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#42](https://github.com/LaxarJS/laxar-mocks/issues/42): fixed injection of visibility mock
 - [#41](https://github.com/LaxarJS/laxar-mocks/issues/41): new `setupForWidget` API, deprecated `createSetupForWidget`
     + **BREAKING CHANGE:** see ticket for details
 
