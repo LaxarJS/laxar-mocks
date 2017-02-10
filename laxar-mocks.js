@@ -224,7 +224,7 @@ function decoratedAdapter( adapter ) {
             axI18n: i18n => createAxI18nMock( i18n ),
             axLog: () => createAxLogMock(),
             axStorage: () => createAxStorageMock(),
-            axVisibility: () => createAxVisibilityMock()
+            axVisibility: () => createAxVisibilityMock( { eventBus, widget: { area: 'content' } } )
          };
       };
    }

@@ -124,7 +124,7 @@ describe( 'A laxar-mocks test runner', () => {
             onDomAvailable: () => {}
          }) );
          artifacts = createFakeArtifacts( descriptor, {
-            injections: [ 'axFeatures', 'axStorage', 'axLog', 'axConfiguration', 'axAssets' ],
+            injections: [ 'axFeatures', 'axStorage', 'axLog', 'axConfiguration', 'axAssets', 'axVisibility' ],
             create
          } );
          configuration = { baseHref: '/' };
@@ -158,12 +158,15 @@ describe( 'A laxar-mocks test runner', () => {
 
             it( 'instantiates the widget controller with the requested injections and config', () => {
                expect( create ).toHaveBeenCalled();
-               const [ features, storage, log, configuration, assets ] = create.calls.mostRecent().args;
+               const [
+                  features, storage, log, configuration, assets, visibility
+               ] = create.calls.mostRecent().args;
                expect( features ).toEqual( { someFeature: 'someValue', other: { value: 'the-default' } } );
                expect( storage.local.setItem ).toEqual( jasmine.any( Function ) );
                expect( log.info ).toEqual( jasmine.any( Function ) );
                expect( configuration.get ).toEqual( jasmine.any( Function ) );
                expect( assets ).toEqual( jasmine.any( Function ) );
+               expect( visibility ).toEqual( jasmine.any( Object ) );
             } );
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,6 +206,14 @@ describe( 'A laxar-mocks test runner', () => {
                   .then( done, done.fail );
 
                expect( assets.forTheme ).toHaveBeenCalled();
+            } );
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+
+            it( 'provides a mock-visibility injection', () => {
+               const visibility = create.calls.mostRecent().args[ 5 ];
+               expect( visibility.mockShow ).toEqual( jasmine.any( Function ) );
+               expect( visibility.mockHide ).toEqual( jasmine.any( Function ) );
             } );
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
