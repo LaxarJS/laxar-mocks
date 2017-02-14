@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#40](https://github.com/LaxarJS/laxar-mocks/issues/40): updated manual for v2.0.0
+
 
 ## v2.0.0-alpha.3
 

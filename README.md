@@ -2,37 +2,39 @@
 
 > The companion testing framework for LaxarJS widgets.
 
+*Warning:* This is the *development version.*
+You may want to browse the [LaxarJS Mocks release documentation](http://laxarjs.org/docs/laxar-mocks-latest/).
+
+## What is LaxarJS Mocks?
+
+*LaxarJS Mocks* simplifies writing tests for [LaxarJS](https://laxarjs.org) widgets, and helps running them.
+
+It is a library that allows you to instantiate a testing sandbox for widgets, and that helps you to mock the services and the lifecycle events that LaxarJS provides.
 Use *LaxarJS Mocks* on top of Jasmine to setup and load a widget just like in an actual application.
 The available APIs then support you in instrumenting and inspecting the widget under test.
 
-For an introduction to *LaxarJS Mocks* have a look at the [manuals](docs/manuals/index.md).
-Additionally the [API docs](docs/api/laxar-mocks.js.md) provide detailed information on the configuration, instrumentation and inspection possibilities.
+Although most widgets only have little direct dependency on *LaxarJS* (often they use only its event bus) and should mostly follow the best practices for their rendering technology such as [AngularJS](https://github.com/LaxarJS/laxar-angular-adapter), [React](https://github.com/LaxarJS/laxar-react-adapter) or [Vue.js](https://github.com/LaxarJS/laxar-vue-adapter), they rely on a specific setup process provided by the LaxarJS runtime and tools.
+
+This setup process includes
+ - acquiring relevant assets (such as templates and stylesheets),
+ - providing configuration and services (such as the event bus),
+ - creation of the controller and rendering at the right time,
+ - publishing the initial lifecycle events.
+
+*LaxarJS Mocks* provides a programmatic interface to control this process and to load a widget within a test.
+It comes with the `laxar-mocks/spec-loader` for webpack, which makes sure that all controls and assets required for a widget test are collected, and that the appropriate adapter is loaded.
+
+For an introduction to *LaxarJS Mocks* and details on test runner setup, have a look at the [manuals](docs/manuals/index.md).
+Additionally the [API docs](docs/api/laxar-mocks.js.md) provide detailed information on the configuration, instrumentation and inspection options.
 
 
 ## Getting Started
 
-*Warning:* This is the *development branch.*
-You may want to browse the [LaxarJS Mocks release documentation](http://laxarjs.org/docs/laxar-mocks-latest/).
+Usually, LaxarJS projects are started from the [Yeoman Generator for LaxarJS 2.x](http://laxarjs.org/docs/generator-laxarjs2-latest/), which automatically sets up LaxarJS Mocks for you, along with webpack and karma.
+If you need to perform a manual setup, for example as part of upgrading a LaxarJS 1.x project, there is an additional [setup manual](docs/manuals/setup.md).
 
 
-## Installation
-
-You can use LaxarJS Mocks to test widgets in-browser, for example using webpack and the [webpack-jasmine-html-runner-plugin](https://www.npmjs.com/package/webpack-jasmine-html-runner-plugin), or in headless mode using [karma](http://karma-runner.github.io/1.0/index.html).
-
-Usually, it is easiest to use the `spec-loader` bundled with `laxar-mocks` so that your spec tests are automatically bundled together with their assets.
-
-```js
-{
-   test: /.spec.jsx?$/,
-   exclude: /(node_modules|bower_components)/,
-   loader: 'laxar-mocks/spec-loader'
-}
-```
-
-Then, simply write regular Jasmine 2 tests, and use the [LaxarJS Mocks API](docs/api/laxar-mocks.md) to instantiate your widgets.
-
-
-### Hacking the library
+### Hacking the Library
 
 Instead of using a pre-compiled library within a project, you can also clone this repository:
 
