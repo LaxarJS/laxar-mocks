@@ -9,15 +9,16 @@
  * Webpack loader for LaxarJS widget spec tests.
  *
  * Automatically loads the following dependencies, which you would otherwise have to pass as options to
- * `createSetupForWidget`:
+ * `setupForWidget`:
  *
+ *  - `descriptor`: the `widget.json` descriptor of a widget, *including* the JSON features schema (if any)
  *  - `artifacts`: artifacts for the widget and its dependencies (obtained through the laxar-loader)
  *  - `adapter`: the necessary adapter module, if the technology is not 'plain'
  *
- * The listings are stored at `window.laxarMocksFixtures`, where LaxarJS mocks will pick them up.
+ * This information is stored using the `fixtures` property of the laxar-mocks module itself.
  *
- * To use, simply configure webpack to use the `laxar-mocks/spec-loader` for files matching /.spec.js$/`,
- * and make sure to name your widget specs accordingly.
+ * To use, simply configure webpack to use the `laxar-mocks/spec-loader` for files matching
+ * /spec/.*\.spec\.js$/` and make sure to name your widget specs accordingly.
  *
  * @name spec-loader
  */
