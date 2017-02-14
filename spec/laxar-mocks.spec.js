@@ -1,4 +1,5 @@
 import * as axMocks from '../laxar-mocks';
+import { object } from 'laxar';
 
 describe( 'A laxar-mocks test runner', () => {
 
@@ -109,12 +110,13 @@ describe( 'A laxar-mocks test runner', () => {
                someFeature: {
                   type: 'string'
                },
-               other: {
+               i18n: {
                   type: 'object',
                   properties: {
-                     value: {
+                     locale: {
                         type: 'string',
-                        default: 'the-default'
+                        format: 'topic',
+                        default: 'default'
                      }
                   }
                }
@@ -144,7 +146,7 @@ describe( 'A laxar-mocks test runner', () => {
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      describe( 'and then to configure and to load the controller', () => {
+      describe( 'and then to configure', () => {
 
          beforeEach( () => {
             axMocks.widget.configure( { someFeature: 'someValue' } );
@@ -161,7 +163,7 @@ describe( 'A laxar-mocks test runner', () => {
                const [
                   features, storage, log, configuration, assets, visibility
                ] = create.calls.mostRecent().args;
-               expect( features ).toEqual( { someFeature: 'someValue', other: { value: 'the-default' } } );
+               expect( features ).toEqual( { someFeature: 'someValue', i18n: { locale: 'default' } } );
                expect( storage.local.setItem ).toEqual( jasmine.any( Function ) );
                expect( log.info ).toEqual( jasmine.any( Function ) );
                expect( configuration.get ).toEqual( jasmine.any( Function ) );
@@ -258,7 +260,7 @@ describe( 'A laxar-mocks test runner', () => {
          describe( 'and then to re-configure an individual path, and to load the controller', () => {
 
             beforeEach( done => {
-               axMocks.widget.configure( 'other.value', 'XYZ' );
+               axMocks.widget.configure( 'i18n.locale', 'vendor' );
                axMocks.widget.load( done );
             } );
 
@@ -267,7 +269,29 @@ describe( 'A laxar-mocks test runner', () => {
             it( 'instantiates the widget controller incorporating the configuration change', () => {
                expect( create ).toHaveBeenCalled();
                const [ features ] = create.calls.mostRecent().args;
-               expect( features ).toEqual( { someFeature: 'someValue', other: { value: 'XYZ' } } );
+               expect( features ).toEqual( { someFeature: 'someValue', i18n: { locale: 'vendor' } } );
+            } );
+
+         } );
+
+         /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+         describe( 'and then to reconfigre an individual path with a format-violating string', () => {
+
+            beforeEach( () => {
+               axMocks.widget.configure( 'i18n.locale', ' dasd  asdas as' );
+            } );
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+
+            it( 'applies laxar-specific validation, for formats', done => {
+               try {
+                  axMocks.widget.load( done.fail, done );
+               }
+               catch( e ) {
+                  expect( e ).toMatch( 'Validation' );
+                  done();
+               }
             } );
 
          } );
@@ -277,7 +301,7 @@ describe( 'A laxar-mocks test runner', () => {
          describe( 'and then to re-configure an individual path, and to load the controller', () => {
 
             beforeEach( done => {
-               axMocks.widget.configure( { other: { value: 'ABC' } } );
+               axMocks.widget.configure( { i18n: { locale: 'customer' } } );
                axMocks.widget.load( done );
             } );
 
@@ -286,7 +310,40 @@ describe( 'A laxar-mocks test runner', () => {
             it( 'instantiates the widget controller using the new configuration', () => {
                expect( create ).toHaveBeenCalled();
                const [ features ] = create.calls.mostRecent().args;
-               expect( features ).toEqual( { other: { value: 'ABC' } } );
+               expect( features ).toEqual( { i18n: { locale: 'customer' } } );
+            } );
+
+         } );
+
+         /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+         describe( 'and then to register service listeners, and to load the controller', () => {
+
+            let services1;
+            let services2;
+
+            beforeEach( done => {
+               axMocks.widget.whenServicesAvailable( services => {
+                  services1 = object.deepClone( services );
+                  services.axId = () => 'MY ID';
+               } );
+               axMocks.widget.whenServicesAvailable( services => {
+                  services2 = object.deepClone( services );
+               } );
+               axMocks.widget.load( done );
+            } );
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+
+            it( 'runs the registered callbacks providing the (mock) injections', () => {
+               expect( services1 ).toBeDefined();
+            } );
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+
+            it( 'allows to override individual services', () => {
+               expect( services2 ).toBeDefined();
+               expect( services2.axId( 'x' ) ).toEqual( 'MY ID' );
             } );
 
          } );

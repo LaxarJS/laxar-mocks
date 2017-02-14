@@ -15,10 +15,10 @@ module.exports = function( config ) {
       frameworks: [ 'jasmine' ],
       files: [
          require.resolve( 'laxar/dist/polyfills' ),
-         'spec/spec-runner.js'
+         'spec/*.spec.js'
       ],
       preprocessors: {
-         'spec/spec-runner.js': [ 'webpack', 'sourcemap' ]
+         'spec/*.spec.js': [ 'webpack', 'sourcemap' ]
       },
       webpack: webpackConfig,
 

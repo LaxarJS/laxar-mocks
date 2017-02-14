@@ -85,6 +85,7 @@ let laxarServices;
  * The methods of the event bus instance available as `axEventBus` are already provided with
  * [Jasmine spies](http://jasmine.github.io/2.3/introduction.html#section-Spies).
  *
+ * @constructor
  * @name Widget
  */
 export const widget = {
@@ -121,13 +122,35 @@ export const widget = {
     * @param {*} [optionalValue]
     *    if `keyOrConfiguration` is a string, this is the value to set the feature configuration to
     *
-    * @memberOf Widget
+    * @memberof Widget
     */
    configure( keyOrConfiguration, optionalValue ) {
       if( !widgetPrivateApi.configure ) {
-         throw new Error( 'laxar-mocks: createSetupForWidget needs to be called prior to configure.' );
+         throw new Error( 'laxar-mocks: setupForWidget needs to be called prior to configure.' );
       }
       widgetPrivateApi.configure( keyOrConfiguration, optionalValue );
+   },
+
+   /**
+    * Allows the user to configures an additional callback, to be run when widget services are available.
+    *
+    * To register multiple callbacks (for example, from nested beforeEach blocks), call this method multiple
+    * times.
+    * Callbacks will be executed  when the widget services are available, just before instantiating the
+    * widget controller. They will be executed with a single parameter: the object of named injections,
+    * usually the mock implementations. Just like at runtime, injections will be instantiated on access. The
+    * registered callbacks can configure these injections, or replace them with custom (mock) objects.
+    *
+    * @param {Function} callback
+    *    a callback to be run
+    *
+    * @memberof Widget
+    */
+   whenServicesAvailable( callback ) {
+      if( !widgetPrivateApi.whenServicesAvailable ) {
+         throw new Error( 'laxar-mocks: setupForWidget needs to be called prior to whenServicesAvailable.' );
+      }
+      widgetPrivateApi.whenServicesAvailable( callback );
    },
 
    /**
@@ -145,7 +168,7 @@ export const widget = {
     * @param {Function} done
     *    callback to notify Jasmine that the asynchronous widget loading has finished
     *
-    * @memberOf Widget
+    * @memberof Widget
     */
    load( done ) {
       if( !widgetPrivateApi.load ) {
@@ -169,7 +192,7 @@ export const widget = {
     * @return {Node}
     *    the widget DOM fragment
     *
-    * @memberOf Widget
+    * @memberof Widget
     */
    render() {
       widgetPrivateApi.renderTo( anchorElement );
@@ -518,6 +541,11 @@ export function setupForWidget( optionalOptions = {} ) {
          }
       };
 
+      const whenServicesAvailableCallbacks = [];
+      widgetPrivateApi.whenServicesAvailable = callback => {
+         whenServicesAvailableCallbacks.push( callback );
+      };
+
       widgetPrivateApi.load = done =>
 
          laxarServices.widgetLoader.load( {
@@ -535,10 +563,15 @@ export function setupForWidget( optionalOptions = {} ) {
                      get: () => services[ k ]
                   } );
                } );
+               whenServicesAvailableCallbacks.forEach( f => f( services ) );
             }
          } )
          .then( _ => {
             loadContext = _;
+            // ugly workaround for Promise/$q interop
+            if( descriptor.integration.technology === 'angular' ) {
+               laxarServices.heartbeat.onNext( () => {} );
+            }
             return loadContext.templatePromise;
          } )
          .then( _ => {
@@ -643,7 +676,7 @@ function validate( features, descriptor ) {
 
       const valid = validate( newFeatures );
       if( !valid ) {
-         throw jsonSchema.error( `Validation failed for widget "${name}"`, validate.errors );
+         throw jsonSchema.error( `Validation failed for widget "${descriptor.name}"`, validate.errors );
       }
    }
    return newFeatures;

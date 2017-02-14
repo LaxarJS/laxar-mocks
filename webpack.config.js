@@ -40,7 +40,7 @@ const config = isProduction ? distConfig() : baseConfig;
 
 if( isBrowserSpec ) {
    const WebpackJasmineHtmlRunnerPlugin = require( 'webpack-jasmine-html-runner-plugin' );
-   config.entry = WebpackJasmineHtmlRunnerPlugin.entry( './spec/spec-runner.js' );
+   config.entry = WebpackJasmineHtmlRunnerPlugin.entry( './spec/*.spec.js' );
    config.plugins = [ new WebpackJasmineHtmlRunnerPlugin() ];
    config.output = {
       path: path.resolve( path.join( process.cwd(), 'spec-output' ) ),
