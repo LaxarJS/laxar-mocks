@@ -9,14 +9,18 @@ A testing framework for LaxarJS widgets.
 
 - [TEST_WIDGET_ID](#TEST_WIDGET_ID)
 - [fixtures](#fixtures)
-- [Widget](#Widget)
-- [configure()](#configure)
-- [load()](#load)
-- [render()](#render)
 - [tearDown()](#tearDown)
 - [triggerStartupEvents()](#triggerStartupEvents)
 - [setupForWidget()](#setupForWidget)
 - [createSetupForWidget()](#createSetupForWidget)
+
+**Types**
+
+- [Widget](#Widget)
+  - [Widget.configure()](#Widget.configure)
+  - [Widget.whenServicesAvailable()](#Widget.whenServicesAvailable)
+  - [Widget.load()](#Widget.load)
+  - [Widget.render()](#Widget.render)
 
 ## Module Members
 
@@ -32,86 +36,7 @@ Spec-runners may add entries to this map to provision widget specs with options 
 picked up by `setupForWidget`. For example, the laxar-mocks spec-loader for webpack puts the `artifacts`,
 `adapter` and `descriptor` options here.
 
-Options passed by the spec-test to `setupForWidget` will take precedence over these values.
-
-#### <a id="Widget"></a>Widget `undefined`
-
-The API to instrument and inspect the widget under test. In addition to the listed methods it has all
-injections for the specific widget technology set as properties. E.g. for every widget technology there
-will be `axEventBus` and `axContext` properties, but for AngularJS widgets there will be an additional
-`$scope` property. Note that these are only available after `load()` has been called and the widget
-controller is loaded.
-
-The methods of the event bus instance available as `axEventBus` are already provided with
-[Jasmine spies](http://jasmine.github.io/2.3/introduction.html#section-Spies).
-
-#### <a id="configure"></a>configure( keyOrConfiguration, optionalValue )
-
-Allows the user to configures the widget features before loading.
-
-Configuration may be specified using
- - a configuration object, similar to a `features` key within a page descriptor,
- - a combination of feature path and value, allowing to conveniently override individual values.
-
-Shorthands may be used:
-
-```js
-beforeEach( () => {
-   testing.widget.configure( 'search.resource', 'search' );
-} );
-```
-
-If no previous configuration was given for other `search` sub-keys, this is equivalent to the following:
-
-```js
-beforeEach( () => {
-   testing.widget.configure( {
-      search: {
-         resource: 'search'
-      }
-   } );
-} );
-```
-
-##### Parameters
-
-| Property | Type | Description |
-| -------- | ---- | ----------- |
-| keyOrConfiguration | `String`, `Object` |  either an object for the full features configuration or the path to the property to configure |
-| _optionalValue_ | `*` |  if `keyOrConfiguration` is a string, this is the value to set the feature configuration to |
-
-#### <a id="load"></a>load( done )
-
-Loads the given widget and instantiates its controller. As this function is asynchronous, it receives
-a Jasmine `done` callback that is called when the widget is ready.
-
-The instance ID (`axContext.widget.id`) for widgets loaded by laxar-mocks is always `testWidget`.
-Their containing widget area is always `content`.
-
-The simplest way to call this function is by passing it to its own `beforeEach` call:
-```js
-beforeEach( testing.widget.load );
-```
-
-##### Parameters
-
-| Property | Type | Description |
-| -------- | ---- | ----------- |
-| done | `Function` |  callback to notify Jasmine that the asynchronous widget loading has finished |
-
-#### <a id="render"></a>render()
-
-Renders the widget's template by calling the appropriate widget adapter and appends it within a
-container div to the test's DOM. The widget DOM fragement will be returned in order to simulate
-user interaction on it. Calling `tearDown()` will remove it again.
-
-Note that calling this method for an activity has no effect and hence is unnessecary.
-
-##### Returns
-
-| Type | Description |
-| ---- | ----------- |
-| `Node` |  the widget DOM fragment |
+Options passed by the spec-test to [`#setupForWidget`](#setupForWidget) will take precedence over these values.
 
 #### <a id="tearDown"></a>tearDown()
 
@@ -286,6 +211,8 @@ and adapter module and instead relies on external tooling (such as the `laxar-mo
 The returned function is asynchronous and should simply be passed to `beforeEach`. By doing so, the Jasmine
 `done` callback is handled under the hood.
 
+**Note:** This method has been deprecated. Use [`#setupForWidget`](#setupForWidget) instead.
+
 ### Example (ES 2015) `example-widget.spec.js`:
 
 ```js
@@ -320,3 +247,101 @@ describe( 'An ExampleWidget', () => {
 | Type | Description |
 | ---- | ----------- |
 | `Function` |  a function to directly pass to `beforeEach`, accepting a Jasmine `done` callback |
+
+## Types
+
+### <a id="Widget"></a>Widget
+
+The API to instrument and inspect the widget under test. In addition to the listed methods it has all
+injections for the specific widget technology set as properties. E.g. for every widget technology there
+will be `axEventBus` and `axContext` properties, but for AngularJS widgets there will be an additional
+`$scope` property. Note that these are only available after `load()` has been called and the widget
+controller is loaded.
+
+The methods of the event bus instance available as `axEventBus` are already provided with
+[Jasmine spies](http://jasmine.github.io/2.3/introduction.html#section-Spies).
+
+#### <a id="Widget.configure"></a>Widget.configure( keyOrConfiguration, optionalValue )
+
+Allows the user to configures the widget features before loading.
+
+Configuration may be specified using
+ - a configuration object, similar to a `features` key within a page descriptor,
+ - a combination of feature path and value, allowing to conveniently override individual values.
+
+Shorthands may be used:
+
+```js
+beforeEach( () => {
+   testing.widget.configure( 'search.resource', 'search' );
+} );
+```
+
+If no previous configuration was given for other `search` sub-keys, this is equivalent to the following:
+
+```js
+beforeEach( () => {
+   testing.widget.configure( {
+      search: {
+         resource: 'search'
+      }
+   } );
+} );
+```
+
+##### Parameters
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| keyOrConfiguration | `String`, `Object` |  either an object for the full features configuration or the path to the property to configure |
+| _optionalValue_ | `*` |  if `keyOrConfiguration` is a string, this is the value to set the feature configuration to |
+
+#### <a id="Widget.whenServicesAvailable"></a>Widget.whenServicesAvailable( callback )
+
+Allows the user to configures an additional callback, to be run when widget services are available.
+
+To register multiple callbacks (for example, from nested beforeEach blocks), call this method multiple
+times.
+Callbacks will be executed  when the widget services are available, just before instantiating the
+widget controller. They will be executed with a single parameter: the object of named injections,
+usually the mock implementations. Just like at runtime, injections will be instantiated on access. The
+registered callbacks can configure these injections, or replace them with custom (mock) objects.
+
+##### Parameters
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| callback | `Function` |  a callback to be run |
+
+#### <a id="Widget.load"></a>Widget.load( done )
+
+Loads the given widget and instantiates its controller. As this function is asynchronous, it receives
+a Jasmine `done` callback that is called when the widget is ready.
+
+The instance ID (`axContext.widget.id`) for widgets loaded by laxar-mocks is always `testWidget`.
+Their containing widget area is always `content`.
+
+The simplest way to call this function is by passing it to its own `beforeEach` call:
+```js
+beforeEach( testing.widget.load );
+```
+
+##### Parameters
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| done | `Function` |  callback to notify Jasmine that the asynchronous widget loading has finished |
+
+#### <a id="Widget.render"></a>Widget.render()
+
+Renders the widget's template by calling the appropriate widget adapter and appends it within a
+container div to the test's DOM. The widget DOM fragement will be returned in order to simulate
+user interaction on it. Calling `tearDown()` will remove it again.
+
+Note that calling this method for an activity has no effect and hence is unnessecary.
+
+##### Returns
+
+| Type | Description |
+| ---- | ----------- |
+| `Node` |  the widget DOM fragment |

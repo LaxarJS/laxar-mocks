@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#31](https://github.com/LaxarJS/laxar-mocks/issues/31): added `axMocks.widget.whenServicesAvailable` to intercept and configure widget injections from tests
+    + NEW FEATURE: see ticket for details
 - [#42](https://github.com/LaxarJS/laxar-mocks/issues/42): fixed injection of visibility mock
 - [#41](https://github.com/LaxarJS/laxar-mocks/issues/41): new `setupForWidget` API, deprecated `createSetupForWidget`
     + **BREAKING CHANGE:** see ticket for details
