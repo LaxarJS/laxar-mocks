@@ -35,7 +35,7 @@ The new `whenServicesAvailable` hook allows to intercept and configure or replac
 No more need for loading the descriptor yourself;
 no more need to specify `knownMissingResources` in order to avoid 404 Requests for the CSS stylesheets of your widget's controls.
 The spec-loader makes sure that all assets have already been loaded if and only if they exist.
-Use `setupForWidget()` instead of `createSetupForWidget( descriptor, options )`.
+Because of that, you should now use the parameterless `setupForWidget()` instead of `createSetupForWidget( descriptor, options )`.
 
 
 ### MVC-Agnostic

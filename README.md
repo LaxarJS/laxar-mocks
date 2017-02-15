@@ -17,6 +17,7 @@ Although most widgets only have little direct dependency on *LaxarJS* (often the
 
 This setup process includes
  - acquiring relevant assets (such as templates and stylesheets),
+ - providing configuration and services (such as the event bus),
  - creation of the controller and rendering at the right time,
  - publishing the initial lifecycle events.
 
