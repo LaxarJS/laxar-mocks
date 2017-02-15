@@ -15,24 +15,25 @@ This library works together with LaxarJS 2.x and the corresponding technology ad
 
 Both `spec_runner.js` and `spec_runner.html` are no longer needed.
 
-HTML and JS boilerplate code for the test runner is now generated on-the-fly (see below for running tests in the web browser or using karma), and should be removed from your repository.
+HTML and JS boilerplate code for the test runner is now generated on-the-fly, and should be removed from your repository.
 Also, the HTML-runner contained hard-coded paths to Jasmine, which could cause test problems when widgets were moved around in a project -- this should no longer be a concern.
+For details, refer to the [setup manual](setup.md).
 
 
 ### LaxarJS Services are Mocked Out-of-the-Box:
 
 When using LaxarJS injections such as `axConfiguration`, `axFlowService` or `axVisibility`, these are now mocked automatically.
 Previously, only the `axEventBus` injection was always mocked.
-You can use a callback to configure or to replace these mocks just before creating your widget controller, as shown in the example below.
+You can use a callback to configure or to replace these mocks just before creating your widget controller.
 
-Also, widget services can now be intercepted just before a widget controller is instantiated:
-The new `whenServicesAvailable` hook allows to intercept and configure or replace LaxarJS widget service mocks *before* the widget controller is created.
+Also, widget services can now be interacted with, *before* the widget controller is instantiated:
+The new `whenServicesAvailable` hook allows to intercept and configure or replace LaxarJS widget service mocks.
 
 
 ### Simplified Testbed Setup
 
-No more need for loading the descriptor yourself; no more need to specify `knownMissingResources` in order to avoid 404 CSS Requests:
-The spec-loader makes sure that all assets have already been loaded.
+No more need for loading the descriptor yourself; no more need to specify `knownMissingResources` in order to avoid 404 Requests for the CSS stylesheets of your widget's controls.
+The spec-loader makes sure that all assets have already been loaded if and only if they exist.
 Use `setupForWidget()` instead of `createSetupForWidget( descriptor, options )`.
 
 

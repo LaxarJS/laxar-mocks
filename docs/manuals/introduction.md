@@ -3,6 +3,8 @@
 # Introduction to LaxarJS Mocks
 
 Before going into details, we will introduce the testing framework by showing an example and use that to describe the individual steps usually found in a widget test.
+Coming from LaxarJS 1.x, the [migration guide](migration.md) may help.
+If you are already familiar with the basics, you may want to browse the [API docs](../api/laxar-mocks.md) instead.
 
 
 ## An Example Test
@@ -12,7 +14,6 @@ Consult your adapter's documentation to find any additional information for your
 
 Below the example, each of the enumerated points is described in more detail.
 Note that some of the steps are optional, depending on your testing needs.
-If you are already familiar with the basics, you may want to browse the [API docs](../api/laxar-mocks.md) instead.
 
 ```js
 // 1. Module Definition, Imports

@@ -72,7 +72,6 @@ However, once you get down to debugging individual test cases, possibly trying t
 Not only can you use the Jasmine HTML spec runner to drill down to individual test cases, but the powerful developer tools of modern browsers are at your disposal.
 
 To help running widget spec tests in the browser without copy/pasting a lot of brittle boilerplate HTML, projects can use the [Webpack Jasmine HTML Runner Plugin](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin) which is maintained by the LaxarJS team.
-
 Again, projects started with the LaxarJS 2 Yeoman Generator are configured to work with the HTML runner plugin out-of-the-box.
 To build and browse the HTML, run `npm run browser-spec` and then open your web browser at `http://localhost:8180/spec-output/` to view the tests served by the webpack-dev-server.
 
@@ -80,7 +79,7 @@ For a *manual setup*, you will need to use a webpack configuration that configur
 
 ```js
 const config = {
-   // your webpack configuration, including the spec-loader config shown above
+   // ... your webpack configuration, including the spec-loader config shown above ...
 };
 
 const WebpackJasmineHtmlRunnerPlugin = require( 'webpack-jasmine-html-runner-plugin' );
@@ -92,4 +91,4 @@ config.output = {
 };
 ```
 
-You will probably put this configuration into a dedicated webpack config for testing, or hide it behind an environment variable, as the generator project does.
+You should probably put the HTML spec runner configuration into a dedicated webpack configuration file used for testing, or hide it behind an environment variable, as the generator project does.
