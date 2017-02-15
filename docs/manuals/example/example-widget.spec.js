@@ -44,6 +44,7 @@ describe( 'An ExampleWidget', () => {
       expect( axMocks.widget.axEventBus.subscribe )
          .toHaveBeenCalledWith( 'didReplace.exampleResource', jasmine.any( Function ) );
    } );
+
    it( 'uses the flow service to generate a "next" link', () => {
       expect( axMocks.widget.axFlowService.constructAbsoluteUrl )
          .toHaveBeenCalledWith( 'next', {} );
