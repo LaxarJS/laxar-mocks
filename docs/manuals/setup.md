@@ -15,7 +15,8 @@ npm install --save-dev laxar-mocks
 ```
 
 It is recommended to put your widget spec tests into files with the extension `.spec.js` within a `spec` folder of each widget that you would like to test.
-For example, a widget called `my-widget` would come with a `spec/my-widget.spec.js`. This allows you to use the webpack *rules* configuration for automatically loading all widget specs through the LaxarJS Mocks `spec-loader`.
+For example, a widget called `my-widget` would come with a `spec/my-widget.spec.js`.
+This allows you to use the webpack *rules* configuration for automatically loading all widget specs through the LaxarJS Mocks `spec-loader`.
 
 Here is an example excerpt for use in a `webpack.config.js`:
 

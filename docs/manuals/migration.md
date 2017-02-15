@@ -26,13 +26,14 @@ When using LaxarJS injections such as `axConfiguration`, `axFlowService` or `axV
 Previously, only the `axEventBus` injection was always mocked.
 You can use a callback to configure or to replace these mocks just before creating your widget controller.
 
-Also, widget services can now be interacted with, *before* the widget controller is instantiated:
+Also, widget services can now be interacted with *before* the widget controller is instantiated:
 The new `whenServicesAvailable` hook allows to intercept and configure or replace LaxarJS widget service mocks.
 
 
 ### Simplified Testbed Setup
 
-No more need for loading the descriptor yourself; no more need to specify `knownMissingResources` in order to avoid 404 Requests for the CSS stylesheets of your widget's controls.
+No more need for loading the descriptor yourself;
+no more need to specify `knownMissingResources` in order to avoid 404 Requests for the CSS stylesheets of your widget's controls.
 The spec-loader makes sure that all assets have already been loaded if and only if they exist.
 Use `setupForWidget()` instead of `createSetupForWidget( descriptor, options )`.
 
@@ -40,4 +41,5 @@ Use `setupForWidget()` instead of `createSetupForWidget( descriptor, options )`.
 ### MVC-Agnostic
 
 No more built-in assumptions regarding AngularJS.
-Neither LaxarJS Core nor LaxarJS Mocks make assumptions on wether AngularJS is used or not. Framework-specific test-code is handled by the adapters.
+Neither LaxarJS Core nor LaxarJS Mocks make assumptions on wether AngularJS is used or not.
+Framework-specific test-code is handled by the adapters.
