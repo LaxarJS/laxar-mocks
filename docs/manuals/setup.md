@@ -27,7 +27,7 @@ module.exports = {
       rules: [
          // ... more rules ...
          {
-            test: /.spec.js$/,
+            test: /spec\/.*\.spec\.js$/,
             loader: 'laxar-mocks/spec-loader'
          }
       ]
@@ -69,11 +69,11 @@ To get all the settings right, especially when you are testing many widgets in t
 
 Karma is great to run all of your tests each time you make a change to your project, for example in a Continuous Integration setup.
 However, once you get down to debugging individual test cases, possibly trying to diagnose browser-specific problems, the ability to run your spec test *within a web browser* is invaluable.
-Not only can you use the Jasmine HTML spec runner to drill down to individual test cases, but the powerful developer tools of modern browsers are at your disposal.
+Not only can you use the Jasmine HTML runner to drill down to individual test cases, but the powerful developer tools of modern browsers are at your disposal.
 
-To help running widget spec tests in the browser without copy/pasting a lot of brittle boilerplate HTML, projects can use the [Webpack Jasmine HTML Runner Plugin](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin) which is maintained by the LaxarJS team.
-Again, projects started with the LaxarJS 2 Yeoman Generator are configured to work with the HTML runner plugin out-of-the-box.
-To build and browse the HTML, run `npm run browser-spec` and then open your web browser at `http://localhost:8180/spec-output/` to view the tests served by the webpack-dev-server.
+To help running widget spec tests in the browser without copy/pasting a lot of brittle boilerplate HTML, projects can use the [Jasmine HTML Runner Plugin for Webpack](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin) which is maintained by the LaxarJS team.
+Again, projects started with the LaxarJS 2 Yeoman Generator are configured to work with the HTML runner plugin out-of-the-box:
+To build and to browse the HTML, run `npm run browser-spec` and then open your web browser at `http://localhost:8180/spec-output/` to view the tests served by the webpack-dev-server.
 
 For a *manual setup*, you will need to use a webpack configuration that configures the HTML spec runner:
 
