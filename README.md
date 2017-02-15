@@ -2,7 +2,7 @@
 
 > The companion testing framework for LaxarJS widgets.
 
-*Warning:* This is the *development branch.*
+*Warning:* This is the *development version.*
 You may want to browse the [LaxarJS Mocks release documentation](http://laxarjs.org/docs/laxar-mocks-latest/).
 
 ## What is LaxarJS Mocks?

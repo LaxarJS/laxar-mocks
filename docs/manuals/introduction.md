@@ -2,14 +2,10 @@
 
 # Introduction to LaxarJS Mocks
 
-First, we're going to explain how to use LaxarJS Mocks.
-Then, there are some notes for LaxarJS v1.x users.
-Then we go into details on setup and running, which you don not need to worry about if using a project created by the  [Yeoman Generator for LaxarJS 2.x](http://laxarjs.org/docs/generator-laxarjs2-latest/).
+Before going into details, we will introduce the testing framework by showing an example and use that to describe the individual steps usually found in a widget test.
 
 
 ## An Example Test
-
-Before going into details, we will introduce the testing framework by showing an example and use this to describe the individual steps usually found in a widget test.
 
 The following is a simple test for a *plain* widget.
 Consult your adapter's documentation to find any additional information for your integration technology.
@@ -36,11 +32,10 @@ describe( 'An ExampleWidget', () => {
          }
       } );
 
-      // 4. Optional: Configuring and/or replacing Widget Services
+      // 4. Optional: Configuring and/or Replacing Widget Services
       axMocks.widget.whenServicesAvailable( services => {
-         services.axFlowService.constructAbsoluteUrl.andCallFake( target =>
-            target === 'next' ? '/step2' : '/other';
-         );
+         services.axFlowService.constructAbsoluteUrl
+            .andCallFake( target => target === 'next' ? '/step2' : '/default' );
          services.axId = suffix => `ABC-${suffix}`;
       } );
    } );
@@ -53,9 +48,7 @@ describe( 'An ExampleWidget', () => {
 
    // 7. Optional: Rendering the Widget DOM
    let widgetDom;
-   beforeEach( () => {
-      widgetDom = axMocks.widget.render();
-   } );
+   beforeEach( () => { widgetDom = axMocks.widget.render(); } );
 
    // 8. Tests
    it( 'subscribes to didReplace events for the example resource', () => {
@@ -81,7 +74,8 @@ describe( 'An ExampleWidget', () => {
 } );
 ```
 
-Now to the step-by-step explanation:
+The individual steps are explained below in more detail.
+
 
 ## 1. Module Definition, Imports
 
@@ -112,7 +106,7 @@ beforeEach( () => {
 ```
 
 
-## 4. *Optional:* Mocking Widget Services
+## 4. *Optional:* Configuring and/or Replacing Widget Services
 
 Next, some of the LaxarJS widget services are modified for the test.
 Because LaxarJS Mocks automatically injects service mocks with appropriate Jasmine spies for all widget services provided by LaxarJS, you will often be able to skip this step.
@@ -178,3 +172,8 @@ If this is omitted, it cannot be guaranteed previous test runs do not influence 
 
 Note that you should *avoid changing global state* in your widget module, as LaxarJS Mocks cannot detect nor revert those changes during tear-down.
 However, side-effecting widget services such as `axStorage` are provided as mocks and are automatically reset between test runs.
+
+
+## More Information
+
+For more in-depth documentation, refer to the [API docs](../api/laxar-mocks.md).
