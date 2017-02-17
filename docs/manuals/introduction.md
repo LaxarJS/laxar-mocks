@@ -19,7 +19,7 @@ Note that some of the steps are optional, depending on your testing needs.
 // 1. Module Definition, Imports
 import * as axMocks from 'laxar-mocks';
 
-describe( 'An ExampleWidget', () => {
+describe( 'An example-widget', () => {
 
    // 2. Testbed Setup, creates axMocks.widget for the widget under test
    beforeEach( axMocks.setupForWidget() );
