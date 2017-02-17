@@ -51,10 +51,10 @@ module.exports = function( content ) {
          require( 'laxar-mocks' ).fixtures,
          ${dependency('adapter')},
          ${dependency('artifacts')},
-         // cannot simply read descriptor from artifacts because the features schema may have been stripped:
+         /* descriptor cannot be read from artifacts because the features schema may have been stripped */
          ${dependency('descriptor')}
       );
-      `,
+      `.replace( /\n/g, ' ' ),
       content
    ].join( ';' );
 

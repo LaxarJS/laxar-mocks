@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#43](https://github.com/LaxarJS/laxar-mocks/issues/43): fixed line numbers in spec-loader output
 - [#40](https://github.com/LaxarJS/laxar-mocks/issues/40): updated manual for v2.0.0
 
 
