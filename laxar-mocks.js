@@ -207,7 +207,7 @@ function decoratedAdapter( adapter ) {
       technology: adapter.technology,
       bootstrap( artifacts, services, domRoot ) {
          laxarServices = services;
-         eventBus = createAxEventBusMock();
+         eventBus = createAxEventBusMock( { errorHandler: handleErrorForJasmine } );
          const adapterFactory = adapter.bootstrap( artifacts, services, domRoot );
          return {
             ...adapterFactory,
