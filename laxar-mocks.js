@@ -49,6 +49,7 @@ export const TEST_WIDGET_ID = 'test-widget';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * This is only used by tooling such as the LaxarJS spec-loader.
  * Can be used to specify setup-fixtures for widget/activity tests.
  *
  * Spec-runners may add entries to this map to provision widget specs with options that will automatically be
@@ -257,19 +258,40 @@ function decoratedAdapter( adapter ) {
 
 /**
  * Removes any DOM fragments of the widget and calls the appropriate destructors. It is advised to call
- * this once in an `afterEach` call. Passing this function directly to `afterEach` works as well.
+ * this once in an `afterEach` call. Passing this function directly to `afterEach` works as well and is
+ * recommended to ensure that cleanup of the test case does not interfere with the followup test.
  *
  * Example.
  * ```js
  * afterEach( axMocks.tearDown );
  * ```
+ *
+ * @param {Function} done
+ *    done callback for asynchronous teardown. Omitting this should not break laxar-mocks, but is discouraged
+ * @param {Object} [optionalOptions]
+ *    optional map of options
+ * @param {Object} [optionalOptions.publishEndLifecycleRequest=true]
+ *    if set to true (default), publish the endLifecycleRequest event to give the widget under test an
+ *    opportunity to clean up between test runs. You may want to disable this in order to manually test the
+ *    cleanup behavior in a dedicated test case
  */
-export function tearDown() {
-   widgetPrivateApi.destroy();
-   if( anchorElement && anchorElement.parentElement ) {
-      anchorElement.parentElement.removeChild( anchorElement );
-      anchorElement = null;
-   }
+export function tearDown( done, optionalOptions = {} ) {
+   const { publishEndLifecycleRequest = true } = optionalOptions;
+   const endLifecyclePromise = publishEndLifecycleRequest ?
+      eventBus.publishAndGatherReplies( 'endLifecycleRequest.default', { lifecycleId: 'default' } ) :
+      Promise.resolve();
+   endLifecyclePromise
+      .then( () => {
+         widgetPrivateApi.destroy();
+         if( anchorElement && anchorElement.parentElement ) {
+            anchorElement.parentElement.removeChild( anchorElement );
+            anchorElement = null;
+         }
+         if( done ) {
+            done();
+         }
+      } );
+   eventBus.flush();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

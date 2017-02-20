@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+- [#45](https://github.com/LaxarJS/laxar-mocks/issues/45): publish `endLifecycleRequest` on tearDown
+    + **BREAKING CHANGE:** see ticket for details
+
 
 ## v2.0.0-beta.0
 

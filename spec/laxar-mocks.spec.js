@@ -239,14 +239,41 @@ describe( 'A laxar-mocks test runner', () => {
 
                describe( 'and to tear it down again', () => {
 
-                  beforeEach( () => {
-                     axMocks.tearDown();
+                  beforeEach( axMocks.tearDown );
+
+                  ////////////////////////////////////////////////////////////////////////////////////////////
+
+                  it( 'publishes the endLifecycleRequest event', () => {
+                     expect( axMocks.eventBus.publishAndGatherReplies ).toHaveBeenCalledWith(
+                        'endLifecycleRequest.default',
+                        { lifecycleId: 'default' }
+                     );
                   } );
 
                   ////////////////////////////////////////////////////////////////////////////////////////////
 
                   it( 'clears the HTML', () => {
                      expect( document.querySelector( '.some-widget' ) ).toEqual( null );
+                  } );
+
+               } );
+
+               ///////////////////////////////////////////////////////////////////////////////////////////////
+
+               describe( 'and to tear it down again, with endLifecycleRequest disabled', () => {
+
+                  beforeEach( done => {
+                     axMocks.tearDown( done, { publishEndLifecycleRequest: false } );
+                  } );
+
+                  ////////////////////////////////////////////////////////////////////////////////////////////
+
+                  it( 'publishes the endLifecycleRequest event', () => {
+                     expect( axMocks.eventBus.publishAndGatherReplies ).not.toHaveBeenCalledWith(
+                        'endLifecycleRequest.default',
+                        { lifecycleId: 'default' },
+                        jasmine.any( Object )
+                     );
                   } );
 
                } );

@@ -30,6 +30,7 @@ The ID used for the widget instance loaded in the test environment.
 
 #### <a id="fixtures"></a>fixtures `Object`
 
+This is only used by tooling such as the LaxarJS spec-loader.
 Can be used to specify setup-fixtures for widget/activity tests.
 
 Spec-runners may add entries to this map to provision widget specs with options that will automatically be
@@ -38,15 +39,24 @@ picked up by `setupForWidget`. For example, the laxar-mocks spec-loader for webp
 
 Options passed by the spec-test to [`#setupForWidget`](#setupForWidget) will take precedence over these values.
 
-#### <a id="tearDown"></a>tearDown()
+#### <a id="tearDown"></a>tearDown( done, optionalOptions )
 
 Removes any DOM fragments of the widget and calls the appropriate destructors. It is advised to call
-this once in an `afterEach` call. Passing this function directly to `afterEach` works as well.
+this once in an `afterEach` call. Passing this function directly to `afterEach` works as well and is
+recommended to ensure that cleanup of the test case does not interfere with the followup test.
 
 Example.
 ```js
 afterEach( axMocks.tearDown );
 ```
+
+##### Parameters
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| done | `Function` |  done callback for asynchronous teardown. Omitting this should not break laxar-mocks, but is discouraged |
+| _optionalOptions_ | `Object` |  optional map of options |
+| _optionalOptions.publishEndLifecycleRequest=true_ | `Object` |  if set to true (default), publish the endLifecycleRequest event to give the widget under test an opportunity to clean up between test runs. You may want to disable this in order to manually test the cleanup behavior in a dedicated test case |
 
 #### <a id="triggerStartupEvents"></a>triggerStartupEvents( optionalEvents )
 
