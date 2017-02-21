@@ -244,7 +244,7 @@ describe( 'A laxar-mocks test runner', () => {
                   ////////////////////////////////////////////////////////////////////////////////////////////
 
                   it( 'publishes the endLifecycleRequest event', () => {
-                     expect( axMocks.eventBus.publishAndGatherReplies ).toHaveBeenCalledWith(
+                     expect( axMocks.eventBus.publish ).toHaveBeenCalledWith(
                         'endLifecycleRequest.default',
                         { lifecycleId: 'default' }
                      );
@@ -269,9 +269,8 @@ describe( 'A laxar-mocks test runner', () => {
                   ////////////////////////////////////////////////////////////////////////////////////////////
 
                   it( 'publishes the endLifecycleRequest event', () => {
-                     expect( axMocks.eventBus.publishAndGatherReplies ).not.toHaveBeenCalledWith(
+                     expect( axMocks.eventBus.publish ).not.toHaveBeenCalledWith(
                         'endLifecycleRequest.default',
-                        { lifecycleId: 'default' },
                         jasmine.any( Object )
                      );
                   } );

@@ -277,21 +277,20 @@ function decoratedAdapter( adapter ) {
  */
 export function tearDown( done, optionalOptions = {} ) {
    const { publishEndLifecycleRequest = true } = optionalOptions;
-   const endLifecyclePromise = publishEndLifecycleRequest ?
-      eventBus.publishAndGatherReplies( 'endLifecycleRequest.default', { lifecycleId: 'default' } ) :
-      Promise.resolve();
-   endLifecyclePromise
-      .then( () => {
-         widgetPrivateApi.destroy();
-         if( anchorElement && anchorElement.parentElement ) {
-            anchorElement.parentElement.removeChild( anchorElement );
-            anchorElement = null;
-         }
-         if( done ) {
-            done();
-         }
-      } );
-   eventBus.flush();
+   if( publishEndLifecycleRequest ) {
+      eventBus.publish( 'endLifecycleRequest.default', { lifecycleId: 'default' } );
+      eventBus.flush();
+   }
+   nextTick( () => {
+      widgetPrivateApi.destroy();
+      if( anchorElement && anchorElement.parentElement ) {
+         anchorElement.parentElement.removeChild( anchorElement );
+         anchorElement = null;
+      }
+      if( done ) {
+         done();
+      }
+   } );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
