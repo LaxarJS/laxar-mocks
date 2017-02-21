@@ -131,17 +131,8 @@ describe( 'A laxar-mocks test runner', () => {
          } );
          configuration = { baseHref: '/' };
 
-         axMocks.fixtures.descriptor = descriptor;
-         axMocks.fixtures.artifacts = artifacts;
-         axMocks.fixtures.configuration = configuration;
+         axMocks.init( { descriptor, artifacts, configuration } );
          axMocks.setupForWidget()( done );
-      } );
-
-      afterEach( () => {
-         delete axMocks.fixtures.descriptor;
-         delete axMocks.fixtures.artifacts;
-         delete axMocks.fixtures.configuration;
-         delete axMocks.fixtures.adapter;
       } );
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////

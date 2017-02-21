@@ -43,17 +43,11 @@ module.exports = function( content ) {
 
    return [
       `
-      ( function( fixtures, adapter, artifacts, descriptor ) {
-         fixtures.adapter = adapter;
-         fixtures.artifacts = artifacts;
-         fixtures.descriptor = descriptor;
-      } )(
-         require( 'laxar-mocks' ).fixtures,
-         ${dependency('adapter')},
-         ${dependency('artifacts')},
-         /* descriptor cannot be read from artifacts because the features schema may have been stripped */
-         ${dependency('descriptor')}
-      );
+      require( 'laxar-mocks' ).init( {
+         adapter: ${dependency('adapter')},
+         artifacts: ${dependency('artifacts')},
+         descriptor: ${dependency('descriptor')}
+      } );
       `.replace( /\n/g, ' ' ),
       content
    ].join( ';' );

@@ -8,7 +8,7 @@ A testing framework for LaxarJS widgets.
 **Module Members**
 
 - [TEST_WIDGET_ID](#TEST_WIDGET_ID)
-- [fixtures](#fixtures)
+- [init()](#init)
 - [tearDown()](#tearDown)
 - [triggerStartupEvents()](#triggerStartupEvents)
 - [setupForWidget()](#setupForWidget)
@@ -28,16 +28,33 @@ A testing framework for LaxarJS widgets.
 
 The ID used for the widget instance loaded in the test environment.
 
-#### <a id="fixtures"></a>fixtures `Object`
+#### <a id="init"></a>init( specFixtures )
 
-This is only used by tooling such as the LaxarJS spec-loader.
-Can be used to specify setup-fixtures for widget/activity tests.
+Allows to provide assets and configuration to be used for testing a widget.
 
-Spec-runners may add entries to this map to provision widget specs with options that will automatically be
-picked up by `setupForWidget`. For example, the laxar-mocks spec-loader for webpack puts the `artifacts`,
-`adapter` and `descriptor` options here.
+This should be used by tooling such as the LaxarJS spec-loader to specify spec fixtures in advance.
 
 Options passed by the spec-test to [`#setupForWidget`](#setupForWidget) will take precedence over these values.
+
+When using the spec-loader, something like the following code will be generated:
+
+```js
+( require( 'laxar-mocks' ).init( {
+   descriptor: require( '../widget.json' ),
+   artifacts: require( 'laxar-loader?widget=example-widget' ),
+   adapter: require( 'laxar-' + fixtures.descriptor.integration.technology + '-adapter' )
+} );
+// ... spec test code ...
+```
+
+##### Parameters
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| specFixtures | `Object` |  modules and artifacts that are required for running the widget spec test |
+| specFixtures.descriptor | `Object` |  the widget's JSON descriptor, containing name, integration and feature validation schema |
+| specFixtures.artifacts | `Object` |  an artifacts listing containing modules and assets for the widget under test and its required controls. Usually generated using the `laxar-tooling` library, or the `laxar-loader` for webpack |
+| _specFixtures.adapter_ | `Object` |  an adapter module for the integration technology of the widget under test. Omit for "plain" widgets |
 
 #### <a id="tearDown"></a>tearDown( done, optionalOptions )
 
@@ -151,14 +168,11 @@ The effect of this call is the following:
 
 #### <a id="setupForWidget"></a>setupForWidget( optionalOptions )
 
-Creates the setup function for a widget test, using externally provided fixtures.
+Creates the setup function for a widget test, using fixtures that were provided through [`#init`](#init).
 
-This is the recommended way to setup your widget test. For this to work, *this* module's `fixtures` export
-needs to be initialized with the following properties:
-
-  - `descriptor` - the widget's JSON descriptor,
-  - `adapter` - the adapter module for the widget's integration technology (use `null` for "plain"),
-  - `artifacts` - an artifact listing containing the assets of the widget and its controls.
+This is the recommended way to setup your widget test. For this to work without manully providing options,
+this module's `init` method must must have been called already, providing `descriptor`, `adapter` and
+`artifacts`.
 
 When webpack loads spec-tests through the `laxar-mocks/spec-loader`, fixtures are provided automatically.
 To manually provide these fixtures, controlling every aspect of your test environment, pass them using the
@@ -176,21 +190,6 @@ describe( 'An ExampleWidget', () => {
    beforeEach( testing.setupForWidget() );
    // ... widget configuration, loading and your tests ...
    afterEach( axMocks.tearDown );
-} );
-```
-
-When using the spec-loader, something like the following code will be generated:
-
-```js
-( fixtures => {
-   fixtures.descriptor = require( '../widget.json' );
-   fixtures.artifacts = require( 'laxar-loader?widget=example-widget' );
-   fixtures.adapter = require( 'laxar-' + fixtures.descriptor.integration.technology + '-adapter' );
-} )( require( 'laxar-mocks' ).fixtures );
-import * as axMocks from 'laxar-mocks';
-
-describe( 'An ExampleWidget', () => {
-   // ... same as above ...
 } );
 ```
 

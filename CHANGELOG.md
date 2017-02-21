@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#46](https://github.com/LaxarJS/laxar-mocks/issues/46): pass spec fixtures using the `init` method
+    + **BREAKING CHANGE:** see ticket for details
 - [#45](https://github.com/LaxarJS/laxar-mocks/issues/45): publish `endLifecycleRequest` on tearDown
     + **BREAKING CHANGE:** see ticket for details
 

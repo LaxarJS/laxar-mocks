@@ -58,4 +58,4 @@ To generate HTML spec runners for opening in your web browser, so that you can e
 npm run browser-spec
 ```
 
-Now you can select a spec-runner by browsing to http://localhost:8082/spec-output/.
+Now you can select a spec-runner by browsing to http://localhost:8087/spec-output/.
