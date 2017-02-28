@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#47](https://github.com/LaxarJS/laxar-mocks/issues/47): project: `laxar-widget-service-mocks` have been removed from the bundle
+
 
 ## v2.0.0-beta.1
 
