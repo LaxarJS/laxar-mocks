@@ -16,7 +16,7 @@ const name = require( './package.json' ).name;
 const externals = {
    'laxar': 'laxar',
    'laxar-tooling': 'laxar-tooling',
-   'laxar/laxar-widget-service-mocks': 'laxar/laxar-widget-service-mocks'
+   'laxar/laxar-widget-service-mocks': 'laxar/dist/laxar-widget-service-mocks'
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
