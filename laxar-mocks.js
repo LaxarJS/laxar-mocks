@@ -715,9 +715,9 @@ function validate( features, descriptor ) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function handleErrorForJasmine( err ) {
+function handleErrorForJasmine( err, moreInformation ) {
    if( window.console && window.console.error ) {
-      window.console.error( err );
+      window.console.error( err, moreInformation );
    }
    jasmine.getEnv().fail( err );
 }
