@@ -333,14 +333,6 @@ const defaultEvents = [
       }
    },
    {
-      topic: 'didChangeLocale',
-      subtopics: {
-         'default': {
-            theme: 'default'
-         }
-      }
-   },
-   {
       topic: 'beginLifecycleRequest',
       subtopics: {
          'default': {
@@ -385,21 +377,14 @@ const defaultEvents = [
  * }
  * ```
  *
- * **2. didChangeTheme.default:**
- * ```js
- * {
- *    theme: 'default'
- * }
- * ```
- *
- * **3. beginLifecycleRequest.default:**
+ * **2. beginLifecycleRequest.default:**
  * ```js
  * {
  *    lifecycleId: 'default'
  * }
  * ```
  *
- * **4. didChangeAreaVisibility.content.true:**
+ * **3. didChangeAreaVisibility.content.true:**
  * ```js
  * {
  *    area: 'content',
@@ -407,7 +392,7 @@ const defaultEvents = [
  * }
  * ```
  *
- * **5. didNavigate.testing:**
+ * **4. didNavigate.testing:**
  * ```js
  * {
  *    place: 'testing',
@@ -426,14 +411,14 @@ const defaultEvents = [
  * Example:
  * ```js
  * axMocks.triggerStartupEvents( {
+ *    beginLifecycleRequest: {
+ *       'default': null
+ *    },
  *    didChangeLocale: {
  *       alternative: {
  *          locale: 'alternative',
  *          languageTag: 'de'
  *       }
- *    },
- *    didChangeTheme: {
- *       'default': null
  *    },
  *    didNavigate: {
  *       testing: {
@@ -449,9 +434,9 @@ const defaultEvents = [
  * ```
  *
  * The effect of this call is the following:
- * 1. There will be two *didChangeLocale* events: *didChangeLocale.default*, carrying the language tag *en*
+ * 1. No *beginLifecycleRequest* event is published, since the only pre-configured one is set to `null`.
+ * 2. There will be two *didChangeLocale* events: *didChangeLocale.default*, carrying the language tag *en*
  *    in its payload, and *didChangeLocale.alternative*, carrying the language tag *de* in its payload.
- * 2. There will be no *didChangeTheme* event, since the only pre-configured one is set to `null`.
  * 3. The parameters of the *didNavigate.testing* event are changed to be
  *    `{ user: 'Peter', articleId: '1234' }`.
  *

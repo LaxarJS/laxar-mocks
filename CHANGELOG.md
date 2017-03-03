@@ -2,7 +2,9 @@
 
 ## Last Changes
 
-- [#48](https://github.com/LaxarJS/laxar-mocks/issues/48): event bus error details are now forwarded to the console
+- [#48](https://github.com/LaxarJS/laxar-mocks/issues/48): removed initial `didChangeTheme` event
+    + **BREAKING CHANGE:** see ticket for details
+- [#49](https://github.com/LaxarJS/laxar-mocks/issues/49): event bus error details are now forwarded to the console
     + NEW FEATURE: see ticket for details
 - [#47](https://github.com/LaxarJS/laxar-mocks/issues/47): project: `laxar-widget-service-mocks` have been removed from the bundle
 
