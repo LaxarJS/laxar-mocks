@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v2.0.0-beta.2
+
 - [#48](https://github.com/LaxarJS/laxar-mocks/issues/48): removed initial `didChangeTheme` event
     + **BREAKING CHANGE:** see ticket for details
 - [#49](https://github.com/LaxarJS/laxar-mocks/issues/49): event bus error details are now forwarded to the console
