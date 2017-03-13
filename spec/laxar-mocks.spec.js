@@ -254,6 +254,7 @@ describe( 'A laxar-mocks test runner', () => {
                describe( 'and to tear it down again, with endLifecycleRequest disabled', () => {
 
                   beforeEach( done => {
+                     spyOn( window.console, 'warn' );
                      axMocks.tearDown( done, { publishEndLifecycleRequest: false } );
                   } );
 
@@ -264,6 +265,30 @@ describe( 'A laxar-mocks test runner', () => {
                         'endLifecycleRequest.default',
                         jasmine.any( Object )
                      );
+                  } );
+
+                  ////////////////////////////////////////////////////////////////////////////////////////////
+
+                  it( 'does not warn about the missing callback', () => {
+                     expect( window.console.warn ).not.toHaveBeenCalled();
+                  } );
+
+               } );
+
+               ///////////////////////////////////////////////////////////////////////////////////////////////
+
+               describe( 'and to tear it down again, with missing done callback', () => {
+
+                  beforeEach( done => {
+                     spyOn( window.console, 'warn' );
+                     axMocks.tearDown();
+                     setTimeout( done, 0 );
+                  } );
+
+                  ////////////////////////////////////////////////////////////////////////////////////////////
+
+                  it( 'warns about the missing callback', () => {
+                     expect( window.console.warn ).toHaveBeenCalled();
                   } );
 
                } );

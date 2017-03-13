@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+- [#52](https://github.com/LaxarJS/laxar-mocks/issues/52): tearDown: complain if `done` callback is missing
+    + NEW FEATURE: see ticket for details
+
 
 ## v2.0.0-beta.2
 

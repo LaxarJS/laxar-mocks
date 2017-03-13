@@ -285,8 +285,8 @@ function decoratedAdapter( adapter ) {
 
 /**
  * Removes any DOM fragments of the widget and calls the appropriate destructors. It is advised to call
- * this once in an `afterEach` call. Passing this function directly to `afterEach` works as well and is
- * recommended to ensure that cleanup of the test case does not interfere with the followup test.
+ * this once in an `afterEach` call. Passing this function directly to `afterEach` is recommended to ensure
+ * that cleanup of the test case does not interfere with any followup test.
  *
  * Example.
  * ```js
@@ -294,7 +294,8 @@ function decoratedAdapter( adapter ) {
  * ```
  *
  * @param {Function} done
- *    done callback for asynchronous teardown. Omitting this should not break laxar-mocks, but is discouraged
+ *    done callback for asynchronous teardown. Omitting this leads to a warning as it can cause problems that
+ *    are hard to diagnose afterwards
  * @param {Object} [optionalOptions]
  *    optional map of options
  * @param {Object} [optionalOptions.publishEndLifecycleRequest=true]
@@ -303,6 +304,11 @@ function decoratedAdapter( adapter ) {
  *    cleanup behavior in a dedicated test case
  */
 export function tearDown( done, optionalOptions = {} ) {
+   if( !done ) {
+      window.console.warn(
+         'laxar-mocks: DEPRECATION: `tearDown` is asynchronous, and must be called with a `done` callback'
+      );
+   }
    const { publishEndLifecycleRequest = true } = optionalOptions;
    if( publishEndLifecycleRequest ) {
       eventBus.publish( 'endLifecycleRequest.default', { lifecycleId: 'default' } );

@@ -2440,9 +2440,9 @@ laxar-tooling@^0.5.0:
     jsonlint "^1.6.2"
     source-map-support "^0.4.2"
 
-laxar@^2.0.0-alpha.15:
-  version "2.0.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/laxar/-/laxar-2.0.0-alpha.15.tgz#c054ca740441b7f96d35bc6727dfef8c807b6b5a"
+laxar@^2.0.0-alpha.16:
+  version "2.0.0-alpha.17"
+  resolved "https://registry.yarnpkg.com/laxar/-/laxar-2.0.0-alpha.17.tgz#35ebe419ab0cfdff27b4b0018d7fbe618ce91bf2"
   dependencies:
     page "~1.7.1"
 

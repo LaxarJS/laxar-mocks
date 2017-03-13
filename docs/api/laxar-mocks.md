@@ -59,8 +59,8 @@ When using the spec-loader, something like the following code will be generated:
 #### <a id="tearDown"></a>tearDown( done, optionalOptions )
 
 Removes any DOM fragments of the widget and calls the appropriate destructors. It is advised to call
-this once in an `afterEach` call. Passing this function directly to `afterEach` works as well and is
-recommended to ensure that cleanup of the test case does not interfere with the followup test.
+this once in an `afterEach` call. Passing this function directly to `afterEach` is recommended to ensure
+that cleanup of the test case does not interfere with any followup test.
 
 Example.
 ```js
@@ -71,7 +71,7 @@ afterEach( axMocks.tearDown );
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
-| done | `Function` |  done callback for asynchronous teardown. Omitting this should not break laxar-mocks, but is discouraged |
+| done | `Function` |  done callback for asynchronous teardown. Omitting this leads to a warning as it can cause problems that are hard to diagnose afterwards |
 | _optionalOptions_ | `Object` |  optional map of options |
 | _optionalOptions.publishEndLifecycleRequest=true_ | `Object` |  if set to true (default), publish the endLifecycleRequest event to give the widget under test an opportunity to clean up between test runs. You may want to disable this in order to manually test the cleanup behavior in a dedicated test case |
 
