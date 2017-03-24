@@ -8,7 +8,7 @@
  *
  * @module laxar-mocks
  */
-import { assert, bootstrap, plainAdapter, object } from 'laxar';
+import { assert, create, plainAdapter, object } from 'laxar';
 import {
    createAxAreaHelperMock,
    createAxAssetsMock,
@@ -547,13 +547,11 @@ export function setupForWidget( optionalOptions = {} ) {
       anchorElement.id = 'widgetContainer';
       document.body.appendChild( anchorElement );
 
-      bootstrap( anchorElement, {
-         widgetAdapters: [ decoratedAdapter( adapter ) ],
-         configuration,
-         artifacts
-      } );
-      let adapterInstance;
+      create( [ decoratedAdapter( adapter ) ], artifacts, configuration )
+         .testing()
+         .bootstrap();
 
+      let adapterInstance;
       widgetPrivateApi.configure = ( keyOrConfiguration, optionalValue ) => {
          if( typeof keyOrConfiguration === 'string' ) {
             object.setPath( features, keyOrConfiguration, optionalValue );

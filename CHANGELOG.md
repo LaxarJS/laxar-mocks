@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#53](https://github.com/LaxarJS/laxar-mocks/issues/53): adapted to the new LaxarJS bootstrapping API (LaxarJS/laxar#437)
 - [#52](https://github.com/LaxarJS/laxar-mocks/issues/52): tearDown: complain if `done` callback is missing
     + NEW FEATURE: see ticket for details
 
