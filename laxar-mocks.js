@@ -27,8 +27,6 @@ import { create as createAjv } from 'laxar-tooling/lib/ajv';
 
 const widgetPrivateApi = {};
 
-// The AngularJS adapter messes with the regular Promise API.
-// To guarantee AngularJS-free scheduling of `widget.render` we need to hold on to the original.
 const Promise = window.Promise;
 const nextTick = f => {
    Promise.resolve().then( f );
