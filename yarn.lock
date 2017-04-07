@@ -2506,11 +2506,11 @@ laxar-tooling@^0.5.0:
     jsonlint "^1.6.2"
     source-map-support "^0.4.2"
 
-laxar@^2.0.0-alpha.19:
-  version "2.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/laxar/-/laxar-2.0.0-alpha.19.tgz#813f3ad06c822277f59cac844a27bbad0665655e"
+laxar@^2.0.0-alpha.22:
+  version "2.0.0-alpha.22"
+  resolved "https://registry.yarnpkg.com/laxar/-/laxar-2.0.0-alpha.21.tgz#398a31ad9f98fc6738d20b10a6dd61305a75fc9f"
   dependencies:
-    navigo "^4.3.0"
+    navigo "4.3.6"
 
 lazy-cache@^1.0.3:
   version "1.0.4"
@@ -2704,9 +2704,9 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-navigo@^4.3.0:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/navigo/-/navigo-4.3.1.tgz#c5f8c3a8f48ccde0f269e9affdaab3462f360d32"
+navigo@4.3.6:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/navigo/-/navigo-4.3.6.tgz#064f3167933e03b1b42a225d19f21606c24ab5e3"
 
 negotiator@0.6.1:
   version "0.6.1"
@@ -4058,9 +4058,9 @@ webpack-dev-server@^2.4.0:
     webpack-dev-middleware "^1.9.0"
     yargs "^6.0.0"
 
-webpack-jasmine-html-runner-plugin@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/webpack-jasmine-html-runner-plugin/-/webpack-jasmine-html-runner-plugin-0.5.0.tgz#0b50b4dd4fad1424a8ebc867c95199ee39a5f091"
+webpack-jasmine-html-runner-plugin@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/webpack-jasmine-html-runner-plugin/-/webpack-jasmine-html-runner-plugin-0.7.0.tgz#dc9389917b15aa84c4266c48cea8b0aeb9267e22"
   dependencies:
     glob "^7.0.5"
     jsondiffpatch "^0.1.43"

@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#55](https://github.com/LaxarJS/laxar-mocks/issues/55): adjusted to LaxarJS/laxar#447
 - [#54](https://github.com/LaxarJS/laxar-mocks/issues/54): removed misleading comment regarding promise-patching
 
 
