@@ -23,7 +23,7 @@
     "eslint": "eslint laxar-mocks.js *.config.js lib spec"
   },
   "dependencies": {
-    "laxar": "^2.0.0-alpha.19",
+    "laxar": "^2.0.0-alpha.22",
     "laxar-tooling": "^0.5.0"
   },
   "devDependencies": {
@@ -46,7 +46,7 @@
     "laxar-dox": "~2.0.0-alpha.4",
     "webpack": "^2.3.0",
     "webpack-dev-server": "^2.4.0",
-    "webpack-jasmine-html-runner-plugin": "^0.5.0"
+    "webpack-jasmine-html-runner-plugin": "^0.7.0"
   },
   "bugs": {
     "url": "https://github.com/LaxarJS/laxar-mocks/issues",

@@ -270,7 +270,11 @@ function decoratedAdapter( adapter ) {
             axGlobalLog: () => createAxLogMock(),
             axGlobalStorage: () => createAxGlobalStorageMock(),
             axHeartbeat: () => createAxHeartbeatMock(),
-            axI18n: i18n => createAxI18nMock( i18n ),
+            axI18n: () => createAxI18nMock( {}, {
+               eventBus,
+               features: widgetPrivateApi.features,
+               widget: { id: TEST_WIDGET_ID }
+            } ),
             axLog: () => createAxLogMock(),
             axStorage: () => createAxStorageMock(),
             axVisibility: () => createAxVisibilityMock( { eventBus, widget: { area: 'content' } } )
@@ -564,12 +568,12 @@ export function setupForWidget( optionalOptions = {} ) {
          whenServicesAvailableCallbacks.push( callback );
       };
 
-      widgetPrivateApi.load = done =>
-
-         laxarServices.widgetLoader.load( {
+      widgetPrivateApi.load = done => {
+         widgetPrivateApi.features = validate( features, descriptor );
+         return laxarServices.widgetLoader.load( {
             id: TEST_WIDGET_ID,
             widget: descriptor.name,
-            features: validate( features, descriptor )
+            features: widgetPrivateApi.features
          }, {
             whenServicesAvailable( services ) {
                // Grab the widget injections and make them available to tests.
@@ -600,6 +604,7 @@ export function setupForWidget( optionalOptions = {} ) {
             adapterInstance = _;
          } )
          .then( done );
+      };
 
       widgetPrivateApi.destroy = () => {
          if( loadContext ) {
