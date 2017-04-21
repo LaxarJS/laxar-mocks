@@ -1,6 +1,6 @@
 {
   "name": "laxar-mocks",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-rc.0",
   "description": "Building large applications is hard, so don't do that!",
   "homepage": "http://laxarjs.org/docs/laxar-mocks-latest",
   "main": "laxar-mocks.js",
