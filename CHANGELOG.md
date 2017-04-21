@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#56](https://github.com/LaxarJS/laxar-mocks/issues/56): use laxar-infrastructure, upgrade to latest laxar and laxar-tooling
+
 
 ## v2.0.0-beta.4
 

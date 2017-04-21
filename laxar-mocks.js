@@ -587,7 +587,7 @@ export function setupForWidget( optionalOptions = {} ) {
                } );
                whenServicesAvailableCallbacks.forEach( f => f( services ) );
             }
-         } )
+         }, { instance: 'specTest', type: 'widget', item: TEST_WIDGET_ID, widget: descriptor.name } )
          .then( _ => {
             loadContext = _;
             // ugly workaround for Promise/$q interop
@@ -697,7 +697,7 @@ function validate( features, descriptor ) {
          { isFeaturesValidator: true }
       );
 
-      const valid = validate( newFeatures );
+      const valid = validate( { features: newFeatures } );
       if( !valid ) {
          throw jsonSchema.error( `Validation failed for widget "${descriptor.name}"`, validate.errors );
       }
