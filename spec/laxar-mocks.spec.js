@@ -365,6 +365,7 @@ describe( 'A laxar-mocks test runner', () => {
             let services2;
 
             beforeEach( done => {
+               spyOn( window.console, 'warn' );
                axMocks.widget.whenServicesAvailable( services => {
                   services1 = object.deepClone( services );
                   services.axId = () => 'MY ID';
@@ -386,6 +387,12 @@ describe( 'A laxar-mocks test runner', () => {
             it( 'allows to override individual services', () => {
                expect( services2 ).toBeDefined();
                expect( services2.axId( 'x' ) ).toEqual( 'MY ID' );
+            } );
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+
+            it( 'warns about missing debug info for axTooling', () => {
+               expect( window.console.warn ).toHaveBeenCalled();
             } );
 
          } );
