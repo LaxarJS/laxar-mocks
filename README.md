@@ -27,7 +27,7 @@ This setup process includes
 It comes with the `laxar-mocks/spec-loader` for webpack, which makes sure that all controls and assets required for a widget test are collected, and that the appropriate adapter is loaded.
 
 For an introduction to *LaxarJS Mocks* and details on test runner setup, have a look at the [manuals](docs/manuals/index.md).
-Additionally the [API docs](docs/api/laxar-mocks.js.md) provide detailed information on the configuration, instrumentation and inspection options.
+Additionally the [API docs](docs/api/laxar-mocks.md) provide detailed information on the configuration, instrumentation and inspection options.
 
 
 ## Getting Started
