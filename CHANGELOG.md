@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v2.0.0-rc.1
+
 - [#57](https://github.com/LaxarJS/laxar-mocks/issues/57): documentation: fixed broken link
 
 
