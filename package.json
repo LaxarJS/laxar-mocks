@@ -21,11 +21,11 @@
     "test": "npm run karma && npm run eslint"
   },
   "peerDependencies": {
-    "laxar": "^2.0.0",
-    "laxar-loader": "^2.0.0"
+    "laxar": "^2.0.0-rc.3",
+    "laxar-loader": "^2.0.0-rc.3"
   },
   "dependencies": {
-    "laxar-tooling": "^2.0.0"
+    "laxar-tooling": "^2.0.0-rc.2"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",
@@ -33,11 +33,11 @@
     "babel-plugin-transform-object-rest-spread": "^6.20.1",
     "babel-preset-es2015": "^6.18.0",
     "eslint": "^3.19.0",
-    "eslint-config-laxarjs": "^2.0.0",
+    "eslint-config-laxarjs": "^2.0.0-rc.0",
     "karma": "^1.6.0",
-    "laxar": "^2.0.0",
-    "laxar-infrastructure": "^2.0.0",
-    "laxar-dox": "^2.0.0",
+    "laxar": "^2.0.0-rc.2",
+    "laxar-infrastructure": "^2.0.0-rc.1",
+    "laxar-dox": "^2.0.0-rc.0",
     "webpack": "^2.4.1",
     "webpack-dev-server": "^2.4.2"
   },

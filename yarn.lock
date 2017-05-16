@@ -1531,11 +1531,7 @@ escope@^3.6.0:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint-config-laxarjs@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-laxarjs/-/eslint-config-laxarjs-0.3.0.tgz#322dc060ade649f740062b6d5e69c523bb3b6e55"
-
-eslint-config-laxarjs@^2.0.0:
+eslint-config-laxarjs@^2.0.0-rc.0:
   version "2.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/eslint-config-laxarjs/-/eslint-config-laxarjs-2.0.0-rc.0.tgz#bef8972f85dac0ead520fe4bded7993dfe654a06"
 
@@ -2596,7 +2592,7 @@ klaw@^1.0.0:
   optionalDependencies:
     graceful-fs "^4.1.9"
 
-laxar-dox@^2.0.0:
+laxar-dox@^2.0.0-rc.0:
   version v2.0.0-rc.0
   resolved "https://registry.yarnpkg.com/laxar-dox/-/laxar-dox-2.0.0-rc.0.tgz#9f61c0cc85137bd7b88c52d86ebd4112830723a7"
   dependencies:
@@ -2605,12 +2601,12 @@ laxar-dox@^2.0.0:
     source-map-support "^0.4.2"
     swig "~1.4.2"
 
-laxar-infrastructure@^2.0.0:
-  version "2.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/laxar-infrastructure/-/laxar-infrastructure-2.0.0-rc.0.tgz#7987f341b0bdd4fdd6f6bf09eedea0b5b1dfde54"
+laxar-infrastructure@^2.0.0-rc.1:
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/laxar-infrastructure/-/laxar-infrastructure-2.0.0-rc.1.tgz#b5e80857fd1cd7e3a4b05f63493573de53c4b073"
   dependencies:
     eslint "^3.0.1"
-    eslint-config-laxarjs "^0.3.0"
+    eslint-config-laxarjs "^2.0.0-rc.0"
     jasmine-core "^2.5.2"
     karma "^1.5.0"
     karma-chrome-launcher "^2.0.0"
@@ -2626,17 +2622,17 @@ laxar-infrastructure@^2.0.0:
     source-map-support "^0.4.10"
     webpack-jasmine-html-runner-plugin "^0.7.0"
 
-laxar-tooling@^2.0.0:
-  version "2.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/laxar-tooling/-/laxar-tooling-2.0.0-rc.0.tgz#5abaff792aa737b1829daef137de7417998d7c94"
+laxar-tooling@^2.0.0-rc.2:
+  version "2.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/laxar-tooling/-/laxar-tooling-2.0.0-rc.2.tgz#cb30da1d51c9e17d88bfacbdff29007a49092d7a"
   dependencies:
     ajv "^4.11.5"
     jsonlint "^1.6.2"
     source-map-support "^0.4.2"
 
-laxar@^2.0.0:
-  version "2.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/laxar/-/laxar-2.0.0-rc.1.tgz#a436125be615b6cfe92e318fc43e49d8ce014dd2"
+laxar@^2.0.0-rc.2:
+  version "2.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/laxar/-/laxar-2.0.0-rc.2.tgz#d352b54b0cbe850fb68dd50df2fefb1ae7edb48c"
   dependencies:
     navigo "4.3.6"
 
