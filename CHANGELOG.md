@@ -3,6 +3,7 @@
 ## Last Changes
 
 
+## v2.0.0
 ## v2.0.0-rc.2
 
 - [#58](https://github.com/LaxarJS/laxar-mocks/issues/58): fixed dependencies in package.json
